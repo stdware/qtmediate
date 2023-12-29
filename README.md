@@ -1,0 +1,2 @@
+# qtmediate
+Qt Extension Framework
