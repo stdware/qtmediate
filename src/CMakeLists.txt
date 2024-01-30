@@ -112,11 +112,9 @@ endmacro()
 # ----------------------------------
 # Main Project
 # ----------------------------------
-add_subdirectory(corelib)
+add_subdirectory(core)
 
 add_subdirectory(widgets)
-
-add_subdirectory(widgettools)
 
 # ----------------------------------
 # Documentation

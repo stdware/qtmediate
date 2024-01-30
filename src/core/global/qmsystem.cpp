@@ -25,12 +25,7 @@ static const char Slash = '/';
         d = dir.entryInfoList();                                                                   \
     }
 
-/*!
-    \namespace QMSys
-    \brief Namespace of system utilities.
-*/
-
-namespace QMSys {
+namespace QM {
 
     /*!
         \fn bool isPathRelative(const QString &path)
@@ -117,14 +112,14 @@ namespace QMSys {
             return false;
         }
 
-        QByteArray bytes1, bytes2;
-        bytes1 = file1.readAll();
-        bytes2 = file2.readAll();
-
-        file3.write(bytes1 + bytes2);
-
+        auto bytes1 = file1.readAll();
         file1.close();
+        
+        auto bytes2 = file2.readAll();
         file2.close();
+
+        file3.write(bytes1);
+        file3.write(bytes2);
         file3.close();
 
         return true;
@@ -245,23 +240,26 @@ namespace QMSys {
         \li On Mac/Linux, returns <tt>\%HOME\%/.config</tt>
     */
     QString appDataPath() {
-        QString path;
-        QString slashName;
+        static const auto path = []() {
+            QString path;
+            QString slashName;
 #ifdef Q_OS_WINDOWS
-        path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+            path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 #elif defined(Q_OS_MAC)
-        path = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.config";
+            path = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + "/.config";
 #else
-        path = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+            path = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
 #endif
-        slashName = Slash + qApp->applicationName();
-        if (path.endsWith(slashName)) {
-            path.chop(slashName.size());
-        }
-        slashName = Slash + qApp->organizationName();
-        if (path.endsWith(slashName)) {
-            path.chop(slashName.size());
-        }
+            slashName = Slash + qApp->applicationName();
+            if (path.endsWith(slashName)) {
+                path.chop(slashName.size());
+            }
+            slashName = Slash + qApp->organizationName();
+            if (path.endsWith(slashName)) {
+                path.chop(slashName.size());
+            }
+            return path;
+        }();
         return path;
     }
 

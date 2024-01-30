@@ -3,14 +3,14 @@
 
 #include <QtGlobal>
 
-#ifndef QMWIDGETS_EXPORT
-#  ifdef QMWIDGETS_STATIC
-#    define QMWIDGETS_EXPORT
+#ifndef QM_WIDGETS_EXPORT
+#  ifdef QM_WIDGETS_STATIC
+#    define QM_WIDGETS_EXPORT
 #  else
-#    ifdef QMWIDGETS_LIBRARY
-#      define QMWIDGETS_EXPORT Q_DECL_EXPORT
+#    ifdef QM_WIDGETS_LIBRARY
+#      define QM_WIDGETS_EXPORT Q_DECL_EXPORT
 #    else
-#      define QMWIDGETS_EXPORT Q_DECL_IMPORT
+#      define QM_WIDGETS_EXPORT Q_DECL_IMPORT
 #    endif
 #  endif
 #endif

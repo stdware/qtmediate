@@ -1,6 +1,6 @@
 #include "qmsimplevarexp.h"
 
-#include "QMSystem.h"
+#include "qmsystem.h"
 
 #include <QCoreApplication>
 #include <QDir>
@@ -152,7 +152,7 @@ QHash<QString, QString> QMSimpleVarExp::systemValues() {
         {"DOCUMENTS",    QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)   },
         {"APPLICATIONS", QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation)},
         {"HOME",         QStandardPaths::writableLocation(QStandardPaths::HomeLocation)        },
-        {"APPDATA",      QMFs::appDataPath()                                                   },
+        {"APPDATA",      QM::appDataPath()                                                     },
         {"TEMP",         QDir::tempPath()                                                      },
         {"ROOT",         QDir::rootPath()                                                      },
         {"APPPATH",      qApp->applicationDirPath()                                            },

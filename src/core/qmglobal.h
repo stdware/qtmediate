@@ -4,10 +4,10 @@
 #include <QtGlobal>
 
 #ifndef QM_CORE_EXPORT
-#  ifdef QMCORE_STATIC
+#  ifdef QM_CORE_STATIC
 #    define QM_CORE_EXPORT
 #  else
-#    ifdef QMCORE_LIBRARY
+#    ifdef QM_CORE_LIBRARY
 #      define QM_CORE_EXPORT Q_DECL_EXPORT
 #    else
 #      define QM_CORE_EXPORT Q_DECL_IMPORT

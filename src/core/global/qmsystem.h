@@ -10,7 +10,7 @@
 
 #include <QMCore/qmglobal.h>
 
-namespace QMSys {
+namespace QM {
 
     //
     // Filesystem
@@ -70,7 +70,7 @@ namespace QMSys {
     }
 
     QM_CORE_EXPORT bool combine(const QString &fileName1, const QString &fileName2,
-                               const QString &newName);
+                                const QString &newName);
 
     QM_CORE_EXPORT void reveal(const QString &filename);
 
@@ -81,7 +81,7 @@ namespace QMSys {
     QM_CORE_EXPORT QString removeTailSlashes(const QString &dirname);
 
     QM_CORE_EXPORT QString appDataPath();
-    
+
 
     //
     // Operating system
@@ -101,7 +101,7 @@ namespace QMSys {
 
     QM_CORE_EXPORT QString rootUserName();
 
-    QM_CORE_EXPORT QString allFilesFilter() {
+    inline QString allFilesFilter() {
 #if defined(Q_OS_WINDOWS)
         return QStringLiteral("*.*");
 #else

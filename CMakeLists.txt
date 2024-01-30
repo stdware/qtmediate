@@ -51,7 +51,7 @@ qm_init_directories()
 # ----------------------------------
 add_subdirectory(src)
 
-add_subdirectory(share)
+# add_subdirectory(share)
 
 if(QTMEDIATE_BUILD_TESTS)
     # add_subdirectory(tests)

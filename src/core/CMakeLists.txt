@@ -20,9 +20,9 @@ file(GLOB_RECURSE _src *.h *.hpp *.cpp *.cc)
 qtmediate_add_library(${PROJECT_NAME} AUTOGEN
     SOURCES ${_src}
     LINKS_PRIVATE ${_platform_libs}
-    INCLUDE_PRIVATE Collections Global Kernel Serialization Text
+    INCLUDE_PRIVATE collections global kernel text
     QT_LINKS Core
     QT_INCLUDE_PRIVATE Core
-    SKIP_AUTOMOC Collections Serialization Text
+    SKIP_AUTOMOC collections global serialization text
     PREFIX QM_CORE
 )

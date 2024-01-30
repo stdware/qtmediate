@@ -175,8 +175,8 @@ public:
             return {tmp, false};
         }
         auto it = m_list.insert(m_list.end(), key);
-        m_map.insert(key, it);
-        return qMakePair(iterator(it), true);
+        m_map[key] = it;
+        return std::make_pair(iterator(it), true);
     }
 
     std::pair<iterator, bool> prepend(const K &key) {
@@ -185,8 +185,8 @@ public:
             return {tmp, false};
         }
         auto it = m_list.insert(m_list.begin(), key);
-        m_map.insert(key, it);
-        return qMakePair(iterator(it), true);
+        m_map[key] = it;
+        return std::make_pair(iterator(it), true);
     }
 
     std::pair<iterator, bool> insert(const const_iterator &it, const K &key) {
@@ -195,8 +195,8 @@ public:
             return {tmp, false};
         }
         auto it2 = m_list.insert(it.i, key);
-        m_map.insert(key, it2);
-        return qMakePair(iterator(it2), true);
+        m_map[key] = it2;
+        return std::make_pair(iterator(it2), true);
     }
 
     bool remove(const K &key) {
@@ -204,7 +204,7 @@ public:
         if (it == m_map.end()) {
             return false;
         }
-        m_list.erase(it.value());
+        m_list.erase(it->second);
         m_map.erase(it);
         return true;
     }
@@ -218,8 +218,8 @@ public:
         if (it2 == m_map.end()) {
             return iterator();
         }
-        auto res = std::next(it2.value());
-        m_list.erase(it2.value());
+        auto res = std::next(it2->second);
+        m_list.erase(it2->second);
         m_map.erase(it2);
         return iterator(res);
     }
@@ -227,7 +227,7 @@ public:
     iterator find(const K &key) {
         auto it = m_map.find(key);
         if (it != m_map.end()) {
-            return iterator(it.value());
+            return iterator(it->second);
         }
         return end();
     }
@@ -239,7 +239,7 @@ public:
     const_iterator constFind(const K &key) const {
         auto it = m_map.constFind(key);
         if (it != m_map.cend()) {
-            return const_iterator(it.value());
+            return const_iterator(it->second);
         }
         return cend();
     }
@@ -295,7 +295,7 @@ private:
     bool tryReplace(const K &key, iterator *it) {
         auto it0 = m_map.find(key);
         if (it0 != m_map.end()) {
-            *it = iterator(it0.value());
+            *it = iterator(it0->second);
             return true;
         }
         return false;
