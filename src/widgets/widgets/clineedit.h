@@ -12,7 +12,7 @@ public:
     explicit CLineEdit(const QString &text, QWidget *parent = nullptr);
     ~CLineEdit();
 
-signals:
+Q_SIGNALS:
     void specialKeyPressed(int key);
 
 protected:

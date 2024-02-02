@@ -63,7 +63,7 @@ bool CLineEdit::event(QEvent *event) {
                 case Qt::Key_Enter:
                 case Qt::Key_Tab:
                 case Qt::Key_Escape:
-                    emit specialKeyPressed(key);
+                    Q_EMIT specialKeyPressed(key);
                     return true;
                     break;
                 default: {

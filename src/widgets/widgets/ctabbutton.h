@@ -22,7 +22,7 @@ public:
     QSize sizeHint() const override;
     QSize minimumSizeHint() const override;
 
-signals:
+Q_SIGNALS:
     void spaceChanged();
 
 protected:

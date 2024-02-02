@@ -301,7 +301,7 @@ bool QMFloatingWindowHelperPrivate::dummyEventFilter(QObject *obj, QEvent *event
                 if (widget && (widget == w || QMFloatingWindowHelper::isWidgetHitTestVisible(w))) {
                     auto button = e->button();
                     QTimer::singleShot(0, this, [this, button]() {
-                        emit q->doubleClicked(button); //
+                        Q_EMIT q->doubleClicked(button); //
                     });
                 }
             }
@@ -334,7 +334,7 @@ bool QMFloatingWindowHelperPrivate::dummyEventFilter(QObject *obj, QEvent *event
                         (widget == w || QMFloatingWindowHelper::isWidgetHitTestVisible(w))) {
                         auto button = e->button();
                         QTimer::singleShot(0, this, [this, button]() {
-                            emit q->clicked(button); //
+                            Q_EMIT q->clicked(button); //
                         });
                     }
                 }

@@ -59,7 +59,7 @@ void CTreeWidget::mouseReleaseEvent(QMouseEvent *event) {
 
     if (click) {
         auto item = index2item(index);
-        emit itemClickedEx(item, index.column(), event->button());
+        Q_EMIT itemClickedEx(item, index.column(), event->button());
     }
 }
 

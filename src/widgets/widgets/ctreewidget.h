@@ -19,7 +19,7 @@ public:
 protected:
     void mouseReleaseEvent(QMouseEvent *event) override;
 
-signals:
+Q_SIGNALS:
     void itemClickedEx(QTreeWidgetItem *item, int column, Qt::MouseButton button);
 };
 

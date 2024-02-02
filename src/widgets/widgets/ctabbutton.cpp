@@ -32,7 +32,7 @@ CTabButton::CTabButton(QWidget *parent) : CTabButton(*new CTabButtonPrivate(), p
 /*!
     Constructs with the specified text.
 */
-CTabButton::CTabButton(const QString &text, QWidget *parent) : CPushButton(parent) {
+CTabButton::CTabButton(const QString &text, QWidget *parent) : CTabButton(parent) {
     setText(text);
 }
 
@@ -40,7 +40,7 @@ CTabButton::CTabButton(const QString &text, QWidget *parent) : CPushButton(paren
     Constructs with the specified icon and text.
 */
 CTabButton::CTabButton(const QIcon &icon, const QString &text, QWidget *parent)
-    : CPushButton(parent) {
+    : CTabButton(parent) {
     setIcon(icon);
     setText(text);
 }
@@ -65,7 +65,7 @@ double CTabButton::spaceRatio() const {
 void CTabButton::setSpaceRatio(double ratio) {
     Q_D(CTabButton);
     d->spaceRatio = ratio;
-    emit spaceChanged();
+    Q_EMIT spaceChanged();
 }
 
 QSize CTabButton::sizeHint() const {

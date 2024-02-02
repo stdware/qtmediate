@@ -3,11 +3,12 @@
 #include <QDebug>
 
 #include <QMWidgets/qmsvgx.h>
-#include <QMWidgets/cpushbutton.h>
+#include <QMWidgets/ctabbutton.h>
 #include <QMWidgets/qmdecoratorv2.h>
 
 MainWindow::MainWindow() {
-    auto btn = new CPushButton("ok");
+    auto btn = new CTabButton("ok");
+    btn->setSpaceRatio(0.5);
     setCentralWidget(btn);
 
     btn->setStyleSheet(QMDecoratorV2::evaluateStyleSheet(R"(
