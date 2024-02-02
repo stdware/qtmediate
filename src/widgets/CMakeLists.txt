@@ -19,8 +19,9 @@ qtmediate_add_library(${PROJECT_NAME} AUTOGEN
     SOURCES ${_src}
     LINKS QMCore
     LINKS_PRIVATE ${_platform_libs}
-    INCLUDE_PRIVATE kernel painting tools widgets
+    INCLUDE_PRIVATE global hooks kernel painting tools widgets
     QT_LINKS Core Gui Widgets Svg
     QT_INCLUDE_PRIVATE Core Gui Widgets
     PREFIX QM_WIDGETS
+    SYNC_INCLUDE_OPTIONS EXCLUDE "plugins/.+"
 )

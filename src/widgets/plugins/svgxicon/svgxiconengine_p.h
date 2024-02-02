@@ -34,7 +34,7 @@ public:
 
     struct SvgScript {
         QString fileName;
-        QString data;
+        QByteArray data;
         bool hasCurrentColor;
 
         SvgScript(const QString &fileName = {}) : fileName(fileName), hasCurrentColor(false) {

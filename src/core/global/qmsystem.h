@@ -97,18 +97,6 @@ namespace QM {
 
     QM_CORE_EXPORT bool isUserRoot();
 
-    QM_CORE_EXPORT QString fileManagerName();
-
-    QM_CORE_EXPORT QString rootUserName();
-
-    inline QString allFilesFilter() {
-#if defined(Q_OS_WINDOWS)
-        return QStringLiteral("*.*");
-#else
-        return QStringLiteral("*");
-#endif
-    }
-
 }
 
 #endif // QMSYSTEM_H

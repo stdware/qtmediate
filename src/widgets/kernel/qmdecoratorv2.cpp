@@ -577,7 +577,7 @@ QString QMDecoratorV2Private::replaceCssGrammars(const QString &stylesheet) {
         }
     }
 
-    // Replace "svg(...);" to "url(\"..., .svgx\");"
+    // Replace "svg(...);" to "url(\"[[...]].svgx\");"
     {
         QRegularExpression re(R"(svg\((.*?)\)(;|\s*\}))",
                               QRegularExpression::MultilineOption |

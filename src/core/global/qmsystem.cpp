@@ -284,38 +284,4 @@ namespace QM {
 #endif
     }
 
-    /*!
-        Returns the translated file manager name of current system.
-
-        \li On Windows, returns \a Explorer
-        \li On Mac, returns \a Finder
-        \li on Linux, returns <em>File Manager</em>
-    */
-    QString fileManagerName() {
-#ifdef Q_OS_WINDOWS
-        return QCoreApplication::translate("QMSystem", "Explorer");
-#elif defined(Q_OS_MAC)
-        return QCoreApplication::translate("QMSystem", "Finder");
-#else
-        return QCoreApplication::translate("QMSystem", "File Manager");
-#endif
-    }
-
-    /*!
-        Returns the translated root user name on current system.
-    */
-    QString rootUserName() {
-#if defined(Q_OS_WINDOWS)
-        return QCoreApplication::translate("QMSystem", "Administrator");
-#else
-        return QCoreApplication::translate("QMSystem", "Root User");
-#endif
-    }
-
-    /*!
-        \fn QString allFilesFilter()
-
-        Returns the file filter string matching all files.
-    */
-
 }

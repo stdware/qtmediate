@@ -112,6 +112,8 @@ QMCoreDecoratorV2 *QMAppExtensionPrivate::createDecorator(QObject *parent) {
     return new QMDecoratorV2(parent);
 }
 
+int QMAppExtensionPrivate::globalIconCacheSerialNum = 0;
+
 /*!
     \class QMAppExtension
 

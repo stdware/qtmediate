@@ -22,6 +22,8 @@ public:
     void init();
 
     QMCoreDecoratorV2 *createDecorator(QObject *parent) override;
+
+    static int globalIconCacheSerialNum;
 };
 
 #endif // QMAPPEXTENSION_P_H

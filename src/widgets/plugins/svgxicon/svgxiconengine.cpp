@@ -12,6 +12,7 @@
 #include <private/qguiapplication_p.h>
 
 #include "qmsvgx_p.h"
+#include "qmappextension_p.h"
 
 QAtomicInt SvgxIconEnginePrivate::lastSerialNum;
 
@@ -22,7 +23,9 @@ QString SvgxIconEnginePrivate::pmcKey(const QSize &size, QIcon::Mode mode, QIcon
     syncData();
 
     // Cache key arguments: serial num, size, current state, color
-    return QLatin1String("$qtm_svgxicon_") +
+    return QLatin1String("$qm_svgxicon_") +
+           QString::number(QMAppExtensionPrivate::globalIconCacheSerialNum, 16)
+               .append(QLatin1Char('_')) +
            QString::number(serialNum, 16).append(QLatin1Char('_')) +
            QString::number((((qint64(size.width()) << 11) | size.height()) << 11) | currentState,
                            16)
@@ -37,9 +40,9 @@ QIcon::Mode SvgxIconEnginePrivate::loadDataForModeAndState(QSvgRenderer *rendere
 
     const auto &script = svgScripts[currentState];
     if (!script.data.isEmpty()) {
-        QString data = script.data;
+        auto data = script.data;
         if (script.hasCurrentColor && !colorHint.isEmpty()) {
-            data.replace("currentColor", colorHint);
+            data.replace("currentColor", colorHint.toUtf8());
         }
         renderer->load(data);
     }
@@ -128,7 +131,7 @@ QPixmap SvgxIconEngine::pixmap(const QSize &size, QIcon::Mode mode, QIcon::State
         return QPixmap();
 
     QImage img(actualSize, QImage::Format_ARGB32_Premultiplied);
-    img.fill(0x00000000);
+    img.fill(Qt::transparent);
     QPainter p(&img);
     renderer.render(&p);
     p.end();
@@ -180,29 +183,25 @@ void SvgxIconEngine::paint(QPainter *painter, const QRect &rect, QIcon::Mode mod
 }
 
 QString SvgxIconEngine::key() const {
-    return QLatin1String("svgx");
+    return QStringLiteral("svgx");
 }
 
 QIconEngine *SvgxIconEngine::clone() const {
     return new SvgxIconEngine(*this);
 }
 
-namespace {
+static QDataStream &operator>>(QDataStream &in, SvgxIconEnginePrivate::SvgScript &s) {
+    in >> s.fileName;
+    in >> s.data;
+    in >> s.hasCurrentColor;
+    return in;
+}
 
-    QDataStream &operator>>(QDataStream &in, SvgxIconEnginePrivate::SvgScript &s) {
-        in >> s.fileName;
-        in >> s.data;
-        in >> s.hasCurrentColor;
-        return in;
-    }
-
-    QDataStream &operator<<(QDataStream &out, const SvgxIconEnginePrivate::SvgScript &s) {
-        out << s.fileName;
-        out << s.data;
-        out << s.hasCurrentColor;
-        return out;
-    }
-
+static QDataStream &operator<<(QDataStream &out, const SvgxIconEnginePrivate::SvgScript &s) {
+    out << s.fileName;
+    out << s.data;
+    out << s.hasCurrentColor;
+    return out;
 }
 
 bool SvgxIconEngine::read(QDataStream &in) {

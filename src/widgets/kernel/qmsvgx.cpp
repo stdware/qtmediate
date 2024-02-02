@@ -78,7 +78,7 @@ namespace QMPrivate {
         }
 
         QString content = s.mid(0, s.size() - 4);
-        if (!content.startsWith("[[") || content.endsWith("]]")) {
+        if (!content.startsWith("[[") || !content.endsWith("]]")) {
             return false;
         }
         content = content.mid(2, content.size() - 4);
@@ -210,9 +210,7 @@ namespace QMSvgx {
         if (checkedFile.isEmpty()) {
             return create(
                 {
-                    {
-                     QM::ButtonNormal,
-                     file, }
+                    {QM::ButtonNormal, file}
             },
                 {{QM::ButtonNormal, color}});
         }

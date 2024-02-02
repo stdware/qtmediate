@@ -13,6 +13,7 @@
 #include <array>
 
 #include <QDataStream>
+#include <QAbstractButton>
 
 #include <QMCore/qmnamespace.h>
 #include <QMWidgets/qmwidgetsglobal.h>
@@ -36,8 +37,11 @@ public:
 private:
     std::array<int, 8> m_arr;
 
+public:
     QM_WIDGETS_EXPORT friend QDataStream &operator>>(QDataStream &in, QMButtonStates &bs);
     QM_WIDGETS_EXPORT friend QDataStream &operator<<(QDataStream &out, const QMButtonStates &bs);
+
+    static QM::ButtonState buttonState(const QAbstractButton *button);
 };
 
 inline int *QMButtonStates::internalData() {
@@ -63,6 +67,7 @@ private:
     T m_values[8];
     QMButtonStates m_state;
 
+public:
     template <class T1>
     friend QDataStream &operator>>(QDataStream &in, QMButtonAttributes<T1> &ba);
 

@@ -492,15 +492,10 @@ void QMCoreAppExtension::setAppPluginsDir(const QString &dir) {
     Creates data and temp directories for further use, returns true if success.
 */
 bool QMCoreAppExtension::createDataAndTempDirs() const {
-    auto func = [this](const QString &path) {
+    static const auto &func = [](const QString &path) {
         qCDebug(qAppExtLog) << "qmcorehost:" << (QM::isDirExist(path) ? "find" : "create")
                             << "directory" << path;
-        if (!QM::mkDir(path)) {
-            showMessage(nullptr, Critical, qApp->applicationName(),
-                        QString("Failed to create %1 directory!").arg(QM::PathFindFileName(path)));
-            return false;
-        }
-        return true;
+        return QM::mkDir(path);
     };
 
     if (!func(appDataDir())) {
@@ -524,7 +519,7 @@ QString QMCoreAppExtension::configurationPath(QSettings::Scope scope) {
     }
 
     static QString dir = QM::appDataPath() + QStringLiteral("/ChorusKit/") +
-                         qApp->applicationName() + QStringLiteral("/qtmediate.user.json");
+                         qApp->applicationName() + QStringLiteral("/qtmediate.json");
     return dir;
 }
 
