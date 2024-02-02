@@ -2,6 +2,8 @@
 
 #include <QDebug>
 
+#include <QMCore/qmbatch.h>
+
 #include "qpixelsize.h"
 #include "qmbuttonstate_p.h"
 #include "qmcss_p.h"
@@ -240,7 +242,8 @@ QPenInfo QPenInfo::fromStringList(const QStringList &stringList) {
 
     it = args.find("dashPattern");
     if (it != args.end()) {
-        res.setDashPattern(QMCss::parseSizeFValueList(it.value()).toVector());
+        res.setDashPattern(
+            QMCss::parseSizeFValueList(QM::strRemoveSideParen(it.value())).toVector());
     }
 
     it = args.find("dashOffset");

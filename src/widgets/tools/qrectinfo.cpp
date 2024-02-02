@@ -3,6 +3,8 @@
 #include <QColor>
 #include <QDebug>
 
+#include <QMCore/qmbatch.h>
+
 #include "qpixelsize.h"
 #include "qmbuttonstate_p.h"
 #include "qmcss_p.h"
@@ -207,7 +209,7 @@ QRectInfo QRectInfo::fromStringList(const QStringList &stringList) {
 
     it = args.find("numbers");
     if (it != args.end()) {
-        auto list = QMCss::parseSizeValueList(it.value());
+        auto list = QMCss::parseSizeValueList(QM::strRemoveSideParen(it.value()));
         auto sz = qMin(4, list.size());
         for (int i = 0; i < sz; ++i) {
             res.d->nums[i] = list.at(i);

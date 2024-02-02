@@ -40,6 +40,7 @@ namespace QMCss {
      */
     QList<int> parseSizeValueList(const QString &s) {
         const auto &valueList = parseStringValueList(s);
+        qDebug().noquote() << s << valueList;
         QList<int> res;
         for (const auto &i : valueList) {
             QString s = i.simplified();
@@ -57,6 +58,7 @@ namespace QMCss {
                 res.push_back(0);
             }
         }
+        qDebug() << "res" << res;
         return res;
     }
 

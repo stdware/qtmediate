@@ -315,9 +315,7 @@ QFontInfoEx QFontInfoEx::fromStringList(const QStringList &stringList) {
     it = args.find("family");
     if (it != args.end()) {
         const auto &val = it.value();
-        QStringList list = (val.startsWith('(') && val.endsWith(')'))
-                               ? QMCss::parseStringValueList(val.mid(1, val.size() - 2))
-                               : QStringList{val};
+        auto list = QMCss::parseStringValueList(QM::strRemoveSideParen(val.mid(1, val.size() - 2)));
         for (auto &item : list)
             item = QM::strRemoveSideQuote(item.trimmed());
         res.setFamilies(list);
@@ -359,7 +357,8 @@ namespace {
     struct initializer {
         initializer() {
             QMetaType::registerConverter<QStringList, QFontInfoEx>(QFontInfoEx::fromStringList);
-            QMCssType::registerMetaTypeName(qMetaTypeId<QFontInfoEx>(), QFontInfoEx::metaFunctionName());
+            QMCssType::registerMetaTypeName(qMetaTypeId<QFontInfoEx>(),
+                                            QFontInfoEx::metaFunctionName());
         }
         ~initializer() {
             QMetaType::unregisterConverterFunction(qMetaTypeId<QStringList>(),
