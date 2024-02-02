@@ -80,11 +80,11 @@ namespace {
     struct initializer {
         initializer() {
             QMetaType::registerConverter<QStringList, QCssValueMap>(QCssValueMap::fromStringList);
-            QMCssType::registerMetaTypeName(qMetaTypeId<QCssValueMap>(), QCssValueMap::metaFunctionName());
+            QMCssType::registerMetaTypeName(qMetaTypeId<QCssValueMap>(),
+                                            QCssValueMap::metaFunctionName());
         }
         ~initializer() {
-            QMetaType::unregisterConverterFunction(qMetaTypeId<QStringList>(),
-                                                   qMetaTypeId<QCssValueMap>());
+            QMCssType::unregisterConverterFunction<QStringList, QCssValueMap>();
             QMCssType::unregisterMetaTypeName(qMetaTypeId<QCssValueMap>());
         }
     } dummy;

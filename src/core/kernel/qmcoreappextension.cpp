@@ -52,8 +52,8 @@ void QMCoreAppExtensionPrivate::init() {
     Q_Q(QMCoreAppExtension);
 
     // Basic directories
-    appDataDir = QM::appDataPath() + "/ChorusKit/" + qApp->applicationName();
-    tempDir = QDir::tempPath() + "/ChorusKit/" + qApp->applicationName();
+    appDataDir = QM::appDataPath() + "/" + qApp->organizationName() + "/" + qApp->applicationName();
+    tempDir = QDir::tempPath() + "/" + qApp->organizationName() + "/" + qApp->applicationName();
 
     libDir = appUpperDir() + "/" + DEFAULT_LIBRARY_DIR;
     shareDir = appUpperDir() + "/" + DEFAULT_SHARE_DIR;
@@ -377,8 +377,8 @@ bool QMCoreAppExtension::isAboutToQuit() const {
 /*!
     Returns application data directory.
 
-    \li On Mac/Linux, the default path is <tt>\%HOME\%/.config/ChorusKit/\%AppName\%</tt>
-    \li On Windows, the default path is <tt>\%UserProfile\%/AppData/Local/\%AppName\%</tt>
+    \li On Mac/Linux, the default path is <tt>\%HOME\%/.config/\%ORG\%/\%AppName\%</tt>
+    \li On Windows, the default path is <tt>\%UserProfile\%/AppData/Local/\%ORG\%/\%AppName\%</tt>
  */
 QString QMCoreAppExtension::appDataDir() const {
     Q_D(const QMCoreAppExtension);

@@ -66,10 +66,8 @@ namespace QMarginsImpl {
                                                 QMarginsImpl::metaFunctionName());
             }
             ~initializer() {
-                QMetaType::unregisterConverterFunction(qMetaTypeId<QStringList>(),
-                                                       qMetaTypeId<QMargins>());
-                QMetaType::unregisterConverterFunction(qMetaTypeId<QString>(),
-                                                       qMetaTypeId<QMargins>());
+                QMCssType::unregisterConverterFunction<QStringList, QMargins>();
+                QMCssType::unregisterConverterFunction<QString, QMargins>();
 
                 QMCssType::unregisterMetaTypeName(qMetaTypeId<QMargins>());
             }

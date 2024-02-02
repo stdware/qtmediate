@@ -520,7 +520,7 @@ QString QMDecoratorV2Private::replaceSizes(const QString &stylesheet, double rat
     while ((index = Content.indexOf(re, index, &match)) != -1) {
         QString MatchString = match.captured();
 
-        double size = MatchString.midRef(0, MatchString.size() - 2).toDouble();
+        double size = MatchString.mid(0, MatchString.size() - 2).toDouble();
         size *= ratio;
         QString ValueString =
             (rounding ? QString::number(int(size)) : QString::number(size)) + "px";

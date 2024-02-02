@@ -2,6 +2,8 @@
 
 #include <QDebug>
 
+#include "qmcss_p.h"
+
 /*!
     \class QPixelSize
     \brief QPixelSize is a wrapper of a number, mainly used to receive a size value from QMetaType
@@ -120,12 +122,10 @@ namespace {
             QMetaType::registerConverter<QPixelSize, double>(doubleConverter);
             QMetaType::registerConverter<QString, QPixelSize>(QPixelSize::fromString);
         }
-        ~initializer() {
-            QMetaType::unregisterConverterFunction(qMetaTypeId<QPixelSize>(), qMetaTypeId<int>());
-            QMetaType::unregisterConverterFunction(qMetaTypeId<QPixelSize>(),
-                                                   qMetaTypeId<double>());
-            QMetaType::unregisterConverterFunction(qMetaTypeId<QString>(),
-                                                   qMetaTypeId<QPixelSize>());
+        ~initializer() {;
+            QMCssType::unregisterConverterFunction<QPixelSize, int>();
+            QMCssType::unregisterConverterFunction<QPixelSize, double>();
+            QMCssType::unregisterConverterFunction<QString, QPixelSize>();
         }
     } dummy;
 }

@@ -27,7 +27,7 @@ public:
 
     void copyAttributes(QFont &font) const {
         if (weight >= 0) {
-            font.setWeight(weight);
+            font.setWeight(static_cast<QFont::Weight>(weight));
         }
 
         if (italic >= 0) {
@@ -361,8 +361,7 @@ namespace {
                                             QFontInfoEx::metaFunctionName());
         }
         ~initializer() {
-            QMetaType::unregisterConverterFunction(qMetaTypeId<QStringList>(),
-                                                   qMetaTypeId<QFontInfoEx>());
+            QMCssType::unregisterConverterFunction<QStringList, QFontInfoEx>();
             QMCssType::unregisterMetaTypeName(qMetaTypeId<QFontInfoEx>());
         }
     } dummy;

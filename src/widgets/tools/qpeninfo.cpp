@@ -285,8 +285,7 @@ namespace {
             QMCssType::registerMetaTypeName(qMetaTypeId<QPenInfo>(), QPenInfo::metaFunctionName());
         }
         ~initializer() {
-            QMetaType::unregisterConverterFunction(qMetaTypeId<QStringList>(),
-                                                   qMetaTypeId<QPenInfo>());
+            QMCssType::unregisterConverterFunction<QStringList, QPenInfo>();
             QMCssType::unregisterMetaTypeName(qMetaTypeId<QPenInfo>());
         }
     } dummy;

@@ -95,8 +95,7 @@ namespace {
                                             QCssValueList::metaFunctionName());
         }
         ~initializer() {
-            QMetaType::unregisterConverterFunction(qMetaTypeId<QStringList>(),
-                                                   qMetaTypeId<QCssValueList>());
+            QMCssType::unregisterConverterFunction<QStringList, QCssValueList>();
             QMCssType::unregisterMetaTypeName(qMetaTypeId<QCssValueList>());
         }
     } dummy;

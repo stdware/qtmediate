@@ -91,7 +91,7 @@ void QMAppExtensionPrivate::init() {
 
         value = appFont.value("Weight");
         if (value.isDouble()) {
-            font.setWeight(value.toInt());
+            font.setWeight(static_cast<QFont::Weight>(value.toInt()));
         }
 
         value = appFont.value("Italic");

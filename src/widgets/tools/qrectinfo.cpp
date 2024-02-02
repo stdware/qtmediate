@@ -250,8 +250,7 @@ namespace {
                                             QRectInfo::metaFunctionName());
         }
         ~initializer() {
-            QMetaType::unregisterConverterFunction(qMetaTypeId<QStringList>(),
-                                                   qMetaTypeId<QRectInfo>());
+            QMCssType::unregisterConverterFunction<QStringList, QRectInfo>();
             QMCssType::unregisterMetaTypeName(qMetaTypeId<QRectInfo>());
         }
     } dummy;
