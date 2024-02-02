@@ -13,6 +13,8 @@ namespace QM {
 
     QM_CORE_EXPORT QString strRemoveSideQuote(const QString &token, bool unescape = false);
 
+    QM_CORE_EXPORT QString strRemoveSideParen(const QString &token);
+
     QM_CORE_EXPORT QList<int> strListToIntList(const QStringList &list);
 
     QM_CORE_EXPORT QList<double> strListToDoubleList(const QStringList &list);

@@ -1,8 +1,11 @@
 #include "qmsvgx_p.h"
 
+#include <QDebug>
 #include <QIconEngine>
 
 #include <private/qicon_p.h>
+
+#include <QMCore/qmbatch.h>
 
 #include "qmcss_p.h"
 
@@ -54,7 +57,7 @@ namespace QMPrivate {
             res.insert(state, arr[i]);
         }
         return res;
-    };
+    }
 
     QString serializeSvgxArgs(const QHash<QM::ButtonState, QString> &fileMap,
                               const QHash<QM::ButtonState, QString> &colorMap) {
@@ -77,7 +80,7 @@ namespace QMPrivate {
             return false;
         }
 
-        QString content = s.mid(0, s.size() - 4);
+        QString content = s.mid(0, s.size() - 5);
         if (!content.startsWith("[[") || !content.endsWith("]]")) {
             return false;
         }
@@ -85,10 +88,10 @@ namespace QMPrivate {
 
         QStringList contentList = QMCss::parseStringValueList(content);
         if (contentList.size() > 0) {
-            *fileMap = parseStates(contentList.front());
+            *fileMap = parseStates(QM::strRemoveSideParen(contentList.front()));
         }
         if (contentList.size() > 1) {
-            *colorMap = parseStates(contentList.at(1));
+            *colorMap = parseStates(QM::strRemoveSideParen(contentList.at(1)));
         }
         return true;
     }

@@ -49,6 +49,18 @@ namespace QM {
     }
 
     /*!
+        Removes the first param at the beginning and end of the string.
+    */
+    QString strRemoveSideParen(const QString &token) {
+        auto str = token;
+        if (str.front() == '(' && str.back() == ')') {
+            str.remove(0, 1);
+            str.remove(str.size() - 1, 1);
+        }
+        return str;
+    }
+
+    /*!
         Converts a string list to a int list, the non-number elements will be skipped.
     */
     QList<int> strListToIntList(const QStringList &list) {

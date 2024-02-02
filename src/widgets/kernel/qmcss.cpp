@@ -112,9 +112,14 @@ namespace QMCss {
                 }
             }
 
+            if (isQuoted || isSingleQuoted) {
+                word.append(ch);
+                continue;
+            }
+
             // The comments may appear in the quoted text, parse after we know the char is not quote
             // sign
-            if (!isQuoted && !isSingleQuoted && i < s.size() - 1) {
+            if (i < s.size() - 1) {
                 QChar nxt = s.at(i + 1);
                 if (ch == '/' && nxt == '*') {
                     isCommented = true;
@@ -127,7 +132,7 @@ namespace QMCss {
                 }
             }
 
-            if (!isCommented && !isQuoted && !isSingleQuoted) {
+            if (!isCommented) {
                 if (level == 0 && ch == ',') {
                     res.append(word.trimmed());
                     word.clear();
@@ -146,7 +151,6 @@ namespace QMCss {
         if (!word.isEmpty()) {
             res.append(word);
         }
-
         return res;
     }
 
