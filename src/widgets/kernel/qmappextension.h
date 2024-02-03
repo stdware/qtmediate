@@ -9,7 +9,7 @@
 #ifdef qAppExt
 #  undef qAppExt
 #endif
-#define qAppExt qobject_cast<QMAppExtension *>(QMGuiAppExtension::instance())
+#define qAppExt qobject_cast<QMAppExtension *>(QMCoreAppExtension::instance())
 
 class QMAppExtensionPrivate;
 
