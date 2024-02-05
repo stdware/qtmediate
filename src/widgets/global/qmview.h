@@ -12,6 +12,8 @@ namespace QMView {
 
     QM_WIDGETS_EXPORT void centralizeWindow(QWidget *w, QSizeF ratio = QSizeF(-1, -1));
 
+    QM_WIDGETS_EXPORT void raiseWindow(QWidget *w);
+
 }
 
 #endif // QMVIEW_H
