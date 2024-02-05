@@ -5,11 +5,11 @@
 #include <vector>
 #include <unordered_map>
 
-template <class K>
+template <class K, class H = std::hash<K>>
 class QMChronoSet {
 private:
     std::list<K> m_list;
-    std::unordered_map<K, typename decltype(m_list)::iterator> m_map;
+    std::unordered_map<K, typename decltype(m_list)::iterator, H> m_map;
 
 public:
     typedef K key_type;

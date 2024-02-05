@@ -453,8 +453,8 @@ void QMCoreAppExtension::setShareDir(const QString &dir) {
 /*!
     Returns the application's share directory.
 
-    \li On Mac, the default path is <tt>\%ShareDir\%/\%AppName\%</tt>
-    \li On Windows/Linux, the default path is <tt>\%ShareDir\%</tt>
+    \li On Mac, the default path is <tt>\%ShareDir\%</tt>
+    \li On Windows/Linux, the default path is <tt>\%ShareDir\%/\%AppName\%</tt>
 */
 QString QMCoreAppExtension::appShareDir() const {
     Q_D(const QMCoreAppExtension);

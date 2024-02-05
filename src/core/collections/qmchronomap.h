@@ -5,11 +5,11 @@
 #include <vector>
 #include <unordered_map>
 
-template <class K, class T>
+template <class K, class T, class H = std::hash<K>>
 class QMChronoMap {
 private:
     std::list<std::pair<K, T>> m_list;
-    std::unordered_map<K, typename decltype(m_list)::iterator> m_map;
+    std::unordered_map<K, typename decltype(m_list)::iterator, H> m_map;
 
 public:
     typedef T mapped_type;
@@ -369,9 +369,11 @@ public:
         }
         return res;
     }
+
     int capacity() const {
         return m_map.capacity();
     }
+
     void reserve(int size) {
         m_map.reserve(size);
     }
