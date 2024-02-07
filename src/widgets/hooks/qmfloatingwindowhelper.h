@@ -21,8 +21,8 @@ public:
     QMargins resizeMargins() const;
     void setResizeMargins(const QMargins &resizeMargins);
 
-    static bool isWidgetHitTestVisible(QWidget *w);
-    static void setWidgetHitTestVisible(QWidget *w, bool value);
+    static bool isTitleBarWidget(QWidget *w);
+    static void setTilteBarWidget(QWidget *w, bool on);
 
 Q_SIGNALS:
     void clicked(Qt::MouseButton button);

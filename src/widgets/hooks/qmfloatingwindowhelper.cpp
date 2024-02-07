@@ -264,7 +264,7 @@ bool QMFloatingWindowHelperPrivate::dummyEventFilter(QObject *obj, QEvent *event
 
             if (!pressed) {
                 auto widget = qobject_cast<QWidget *>(obj);
-                if (widget && (widget == w || QMFloatingWindowHelper::isWidgetHitTestVisible(w))) {
+                if (widget && (widget == w || QMFloatingWindowHelper::isTitleBarWidget(w))) {
                     pressed = true;
                 }
             }
@@ -278,7 +278,7 @@ bool QMFloatingWindowHelperPrivate::dummyEventFilter(QObject *obj, QEvent *event
             }
             break;
         }
-        case QEvent::GraphicsSceneMouseDoubleClick: {
+        case QEvent::MouseButtonDblClick: {
             auto e = static_cast<QMouseEvent *>(event);
 
             // Restore all
@@ -298,7 +298,7 @@ bool QMFloatingWindowHelperPrivate::dummyEventFilter(QObject *obj, QEvent *event
 
             if (!pressed) {
                 auto widget = qobject_cast<QWidget *>(obj);
-                if (widget && (widget == w || QMFloatingWindowHelper::isWidgetHitTestVisible(w))) {
+                if (widget && (widget == w || QMFloatingWindowHelper::isTitleBarWidget(w))) {
                     auto button = e->button();
                     QTimer::singleShot(0, this, [this, button]() {
                         Q_EMIT q->doubleClicked(button); //
@@ -330,8 +330,7 @@ bool QMFloatingWindowHelperPrivate::dummyEventFilter(QObject *obj, QEvent *event
 
                 if (!pressed) {
                     auto widget = qobject_cast<QWidget *>(obj);
-                    if (widget &&
-                        (widget == w || QMFloatingWindowHelper::isWidgetHitTestVisible(w))) {
+                    if (widget && (widget == w || QMFloatingWindowHelper::isTitleBarWidget(w))) {
                         auto button = e->button();
                         QTimer::singleShot(0, this, [this, button]() {
                             Q_EMIT q->clicked(button); //
@@ -415,10 +414,10 @@ void QMFloatingWindowHelper::setResizeMargins(const QMargins &resizeMargins) {
 
 static const char KEY_NAME_HIT_TEST_VISIBLE[] = "qm_hit_test_visible";
 
-bool QMFloatingWindowHelper::isWidgetHitTestVisible(QWidget *w) {
+bool QMFloatingWindowHelper::isTitleBarWidget(QWidget *w) {
     return w->property(KEY_NAME_HIT_TEST_VISIBLE).toBool();
 }
 
-void QMFloatingWindowHelper::setWidgetHitTestVisible(QWidget *w, bool value) {
-    w->setProperty(KEY_NAME_HIT_TEST_VISIBLE, value);
+void QMFloatingWindowHelper::setTilteBarWidget(QWidget *w, bool on) {
+    w->setProperty(KEY_NAME_HIT_TEST_VISIBLE, on);
 }
