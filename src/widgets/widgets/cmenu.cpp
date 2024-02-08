@@ -27,6 +27,7 @@
 
 #include <QTimer>
 #include <QDesktopWidget>
+#include <QActionGroup>
 
 static bool appUseFullScreenForPopup() {
     auto theme = QGuiApplicationPrivate::platformTheme();
