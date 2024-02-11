@@ -5,10 +5,6 @@
 
 #include <QMWidgets/qmwidgetsglobal.h>
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-using CMenu = QMenu;
-#else
-
 class CMenuPrivate;
 
 class QM_WIDGETS_EXPORT CMenu : public QMenu {
@@ -27,7 +23,5 @@ protected:
 private:
     CMenuPrivate *d;
 };
-
-#endif
 
 #endif // CMENU_H
