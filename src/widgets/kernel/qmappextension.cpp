@@ -19,9 +19,6 @@
 #include <QMessageBox>
 #include <QFontDatabase>
 
-#include <private/qapplication_p.h>
-#include <private/qshortcutmap_p.h>
-
 #include <QMCore/qmsystem.h>
 
 #include "qmdecoratorv2.h"
@@ -165,64 +162,6 @@ void QMAppExtension::showMessage(QObject *parent, MessageBoxFlag flag, const QSt
             break;
     };
 #endif
-}
-
-namespace {
-
-    class ShortcutFilter : public QObject {
-    public:
-        ShortcutFilter(QWidget *org) : m_org(org), m_handled(false) {
-        }
-
-        inline bool handled() const {
-            return m_handled;
-        }
-
-    protected:
-        bool eventFilter(QObject *watched, QEvent *event) override {
-            if (event->type() == QEvent::Shortcut) {
-                QApplicationPrivate::active_window = m_org;
-                m_handled = true;
-            }
-            return QObject::eventFilter(watched, event);
-        }
-
-    private:
-        QWidget *m_org;
-        bool m_handled;
-    };
-
-}
-
-/*!
-    Redirect the key event as a shortcut to the given window.
-*/
-void QMAppExtension::forwardShortcut(QKeyEvent *event, QWidget *window) {
-    // This function hacks the QApplication data structure and simply changes
-    // the `active_window` pointer temporarily to make the shortcut map transmit the
-    // event to the target window.
-
-    if (!window || !window->isWindow()) {
-        return;
-    }
-
-    // Hack `active_window` temporarily
-    auto org = QApplicationPrivate::active_window;
-    QApplicationPrivate::active_window = window;
-
-    // Make sure to restore `active_window` right away if shortcut matches
-    ShortcutFilter filter(org);
-    qApp->installEventFilter(&filter);
-
-    // Retransmit event
-    QKeyEvent keyEvent(QEvent::ShortcutOverride, event->key(), event->modifiers(),
-                       event->nativeScanCode(), event->nativeVirtualKey(), event->nativeModifiers(),
-                       event->text(), event->isAutoRepeat(), event->count());
-    QGuiApplicationPrivate::instance()->shortcutMap.tryShortcut(&keyEvent);
-
-    if (!filter.handled()) {
-        QApplicationPrivate::active_window = org;
-    }
 }
 
 /*!

@@ -1,33 +1,37 @@
 #include "cmenu.h"
 
-#include <QDebug>
-#include <QFontMetrics>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 
-#include <private/qaction_p.h>
-#include <private/qkeysequence_p.h>
-#include <private/qmenu_p.h>
-#include <qiconengine.h>
+#else
 
-#ifdef Q_OS_WINDOWS
-#  include <dwmapi.h>
-#endif
+#  include <QDebug>
+#  include <QFontMetrics>
 
-#include "qmsvgx.h"
-#include "qmcss_p.h"
-#include "qmrasterpaintaccessor.h"
+#  include <private/qaction_p.h>
+#  include <private/qkeysequence_p.h>
+#  include <private/qmenu_p.h>
+#  include <qiconengine.h>
+
+#  ifdef Q_OS_WINDOWS
+#    include <dwmapi.h>
+#  endif
+
+#  include "qmsvgx.h"
+#  include "qmcss_p.h"
+#  include "qmrasterpaintaccessor.h"
 
 // ======================================================================================
 // CMenuImpl
 
-#include <private/qaction_p.h>
-#include <private/qeffects_p.h>
-#include <private/qguiapplication_p.h>
-#include <private/qmenu_p.h>
-#include <qpa/qplatformtheme.h>
+#  include <private/qaction_p.h>
+#  include <private/qeffects_p.h>
+#  include <private/qguiapplication_p.h>
+#  include <private/qmenu_p.h>
+#  include <qpa/qplatformtheme.h>
 
-#include <QTimer>
-#include <QDesktopWidget>
-#include <QActionGroup>
+#  include <QTimer>
+#  include <QDesktopWidget>
+#  include <QActionGroup>
 
 static bool appUseFullScreenForPopup() {
     auto theme = QGuiApplicationPrivate::platformTheme();
@@ -151,14 +155,14 @@ void QMenuPrivate::updateActionRects(const QRect &screen) const {
                 if (t != -1) {
                     tabWidth = qMax(int(tabWidth), qfm.horizontalAdvance(s.mid(t + 1)));
                     s = s.left(t);
-#ifndef QT_NO_SHORTCUT
+#  ifndef QT_NO_SHORTCUT
                 } else if (action->isShortcutVisibleInContextMenu() || !contextMenu) {
                     QKeySequence seq = action->shortcut();
                     if (!seq.isEmpty())
                         tabWidth =
                             qMax(int(tabWidth),
                                  qfm.horizontalAdvance(seq.toString(QKeySequence::NativeText)));
-#endif
+#  endif
                 }
                 sz.setWidth(
                     fm.boundingRect(QRect(), Qt::TextSingleLine | Qt::TextShowMnemonic, s).width());
@@ -282,7 +286,7 @@ void QMenuPrivate::hideMenu(QMenu *menu) {
         bool deleteLater = false;
     };
 
-#if QT_CONFIG(effects)
+#  if QT_CONFIG(effects)
     QSignalBlocker blocker(menu);
     aboutToHide = true;
     // Flash item which is about to trigger (if any).
@@ -304,7 +308,7 @@ void QMenuPrivate::hideMenu(QMenu *menu) {
 
     aboutToHide = false;
     blocker.unblock();
-#endif // QT_CONFIG(effects)
+#  endif // QT_CONFIG(effects)
     if (activeMenu == menu)
         activeMenu = nullptr;
     menu->d_func()->causedPopup.action = nullptr;
@@ -472,10 +476,10 @@ public:
         // Initialize Font
         q->setFont(qApp->font());
 
-#ifdef Q_OS_WINDOWS
+#  ifdef Q_OS_WINDOWS
         // Call Windows enhancement (if applicable)
         initWindowsEnhancement();
-#endif
+#  endif
     }
 
     void updateActionStats() {
@@ -500,7 +504,7 @@ public:
     }
 
 private:
-#ifdef Q_OS_WINDOWS
+#  ifdef Q_OS_WINDOWS
     void initWindowsEnhancement() {
         // Disable Qt drop shadow attribute in order to remove CS_DROPSHADOW
         q->setWindowFlag(Qt::NoDropShadowWindowHint, true);
@@ -535,7 +539,7 @@ private:
         });
     }
     QMetaObject::Connection m_winEnhanceTrigger;
-#endif
+#  endif
 };
 
 CMenu::CMenu(QWidget *parent) : QMenu(parent), d(new CMenuPrivate(this)) {
@@ -781,7 +785,7 @@ void CMenu::initStyleOption(QStyleOptionMenuItem *option, const QAction *action)
     // 1. Change key sequence separator from "," to " "
     // 2. Change tab width to right align shortcut text
 
-#ifndef QT_NO_SHORTCUT
+#  ifndef QT_NO_SHORTCUT
     if ((action->isShortcutVisibleInContextMenu() || !d->isContextMenu()) &&
         textAndAccel.indexOf(QLatin1Char('\t')) == -1) {
         QKeySequence seq = action->shortcut();
@@ -792,9 +796,11 @@ void CMenu::initStyleOption(QStyleOptionMenuItem *option, const QAction *action)
             tabWidth = QFontMetrics(font()).horizontalAdvance(seqText);
         }
     }
-#endif
+#  endif
     option->text = textAndAccel;
     option->tabWidth = tabWidth;
     option->maxIconWidth = d->maxIconWidth;
     option->menuRect = rect();
 }
+
+#endif

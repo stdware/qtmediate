@@ -23,8 +23,6 @@ public:
     void showMessage(QObject *parent, MessageBoxFlag flag, const QString &title,
                      const QString &text) const override;
 
-    static void forwardShortcut(QKeyEvent *event, QWidget *window);
-
 protected:
     QMAppExtension(QMAppExtensionPrivate &d, QObject *parent = nullptr);
 };
