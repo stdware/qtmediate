@@ -28,7 +28,7 @@ public:
 public:
     static QPixelSize fromString(const QString &string);
 
-    friend QDebug operator<<(QDebug debug, const QPixelSize &pixel);
+    friend QM_WIDGETS_EXPORT QDebug operator<<(QDebug debug, const QPixelSize &pixel);
 
 private:
     double m_value;
