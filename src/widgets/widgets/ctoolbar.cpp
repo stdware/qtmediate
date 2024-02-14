@@ -61,9 +61,9 @@ QToolBarItem *HackToolBarLayout::createItem(QAction *action) {
     bool customWidget = false;
     bool standardButtonWidget = false;
     QWidget *widget = nullptr;
-    auto tb = qobject_cast<QToolBar *>(parentWidget());
+    auto tb = qobject_cast<CToolBar *>(parentWidget());
     if (!tb)
-        return (QToolBarItem *) nullptr;
+        return nullptr;
 
     if (auto widgetAction = qobject_cast<QWidgetAction *>(action)) {
         widget = widgetAction->requestWidget(tb);
@@ -76,7 +76,7 @@ QToolBarItem *HackToolBarLayout::createItem(QAction *action) {
     }
 
     if (!widget) {
-        auto button = new CToolButton(tb);
+        auto button = tb->createButton(tb);
         button->setAutoRaise(true);
         button->setFocusPolicy(Qt::NoFocus);
         button->setIconSize(tb->iconSize());
@@ -129,6 +129,10 @@ CToolBar::CToolBar(QWidget *parent) : QToolBar(parent) {
     Destructor.
 */
 CToolBar::~CToolBar() {
+}
+
+QToolButton *CToolBar::createButton(QWidget *parent) {
+    return new CToolButton(parent);
 }
 
 void CToolBar::actionEvent(QActionEvent *event) {
