@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include <QMWidgets/QMWidgetsGlobal.h>
+#include <QMWidgets/qmwidgetsglobal.h>
 
 class QM_WIDGETS_EXPORT QMAutoResizer : public QObject {
     Q_OBJECT

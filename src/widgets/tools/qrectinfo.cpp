@@ -1,4 +1,4 @@
-#include "QRectInfo.h"
+#include "qrectinfo.h"
 
 #include <QColor>
 #include <QDebug>

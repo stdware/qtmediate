@@ -1,10 +1,10 @@
-#include "QFontInfoEx.h"
+#include "qfontinfoex.h"
 
 #include <QColor>
 #include <QDebug>
 #include <QGuiApplication>
 
-#include <QMCore/QMBatch.h>
+#include <QMCore/qmbatch.h>
 
 #include "qmbuttonstate_p.h"
 #include "qmcss_p.h"

@@ -3,7 +3,7 @@
 
 #include <QMouseEvent>
 
-#include <QMWidgets/QMWidgetsGlobal.h>
+#include <QMWidgets/qmwidgetsglobal.h>
 
 class QMMouseEventGuardPrivate;
 

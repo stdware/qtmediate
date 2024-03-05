@@ -1,4 +1,4 @@
-#include "QPenInfo.h"
+#include "qpeninfo.h"
 
 #include <QDebug>
 

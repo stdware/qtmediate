@@ -4,7 +4,7 @@
 #include <QMargins>
 #include <QObject>
 
-#include <QMWidgets/QMWidgetsGlobal.h>
+#include <QMWidgets/qmwidgetsglobal.h>
 
 class QMFloatingWindowHelperPrivate;
 

@@ -52,12 +52,12 @@ public:
 
     template <class From, class To>
     static inline void unregisterConverterFunction() {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        QMetaType::unregisterConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>());
-#else
-        QMetaType::unregisterConverterFunction(QMetaType::fromType<From>(),
-                                               QMetaType::fromType<To>());
-#endif
+// #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+//         QMetaType::unregisterConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>());
+// #else
+//         QMetaType::unregisterConverterFunction(QMetaType::fromType<From>(),
+//                                                QMetaType::fromType<To>());
+// #endif
     }
 };
 

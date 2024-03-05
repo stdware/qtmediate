@@ -260,13 +260,13 @@ void QMCoreAppExtensionPrivate::osMessageBox_helper(void *winHandle,
     CFOptionFlags result;
     int level = 0;
     switch (flag) {
-        case QMCoreConsole::Critical:
+        case QMCoreAppExtension::Critical:
             level = 2;
             break;
-        case QMCoreConsole::Warning:
+        case QMCoreAppExtension::Warning:
             level = 1;
             break;
-        case QMCoreConsole::Question:
+        case QMCoreAppExtension::Question:
             level = 3;
             break;
         default:

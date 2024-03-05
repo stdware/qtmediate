@@ -1,5 +1,5 @@
-#include "QMDecoratorV2.h"
-#include "QMDecoratorV2_p.h"
+#include "qmdecoratorv2.h"
+#include "qmdecoratorv2_p.h"
 
 #include <QApplication>
 #include <QDir>

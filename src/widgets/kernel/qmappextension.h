@@ -3,8 +3,8 @@
 
 #include <QKeyEvent>
 
-#include <QMCore/QMCoreAppExtension.h>
-#include <QMWidgets/QMWidgetsGlobal.h>
+#include <QMCore/qmcoreappextension.h>
+#include <QMWidgets/qmwidgetsglobal.h>
 
 #ifdef qAppExt
 #  undef qAppExt

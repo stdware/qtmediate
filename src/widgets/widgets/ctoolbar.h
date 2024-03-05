@@ -2,6 +2,7 @@
 #define CTOOLBAR_H
 
 #include <QToolBar>
+#include <QToolButton>
 
 #include <QMWidgets/qmwidgetsglobal.h>
 
