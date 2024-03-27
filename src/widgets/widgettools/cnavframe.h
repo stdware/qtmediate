@@ -26,10 +26,6 @@ public:
 
     QSplitter *splitter() const;
 
-    /**
-     * @brief Button which will control the widget visibility, set text or icon after call
-     *
-     */
     inline QAbstractButton *addWidget(QWidget *w);
     QAbstractButton *insertWidget(int index, QWidget *w);
     void removeWidget(QWidget *w);
