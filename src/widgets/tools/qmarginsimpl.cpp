@@ -1,4 +1,4 @@
-#include "QMarginsImpl.h"
+#include "qmarginsimpl.h"
 
 #include <QDebug>
 

@@ -4,7 +4,7 @@
 #include <QIconEngine>
 #include <QSharedData>
 
-#include <QMCore/QMNamespace.h>
+#include <QMCore/qmnamespace.h>
 
 class SvgxIconEnginePrivate;
 

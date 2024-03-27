@@ -1,8 +1,8 @@
-#include "QCssValueMap.h"
+#include "qcssvaluemap.h"
 
 #include <QDebug>
 
-#include <QMCore/QMBatch.h>
+#include <QMCore/qmbatch.h>
 
 #include "qmcss_p.h"
 
