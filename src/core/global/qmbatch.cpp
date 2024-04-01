@@ -1,4 +1,4 @@
-#include "QMBatch.h"
+#include "qmbatch.h"
 
 #include <QDebug>
 #include <QSet>

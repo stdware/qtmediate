@@ -5,7 +5,7 @@
 #include <QSplitter>
 #include <QStackedLayout>
 
-#include "CTabButton.h"
+#include "ctabbutton.h"
 
 class CNavFramePrivate : public QObject {
     Q_DECLARE_PUBLIC(CNavFrame)
