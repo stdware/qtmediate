@@ -171,6 +171,7 @@ QAbstractButton *CNavFrame::insertWidget(int index, QWidget *w) {
     // Insert to layouts
     d->buttonLayout->insertWidget(index, btn);
     d->stack->insertWidget(index, w);
+    widgetAdded(w, btn);
 
     return btn;
 }
@@ -191,8 +192,11 @@ void CNavFrame::removeAt(int index) {
     d->btnGroup->removeButton(btn);
 
     // Remove from layouts
+    auto w = d->stack->widget(index);
     d->buttonLayout->removeWidget(btn);
-    d->stack->removeWidget(d->stack->widget(index));
+    d->stack->removeWidget(w);
+
+    widgetAboutToRemove(w, btn);
 
     // Delete button
     btn->deleteLater();
@@ -231,4 +235,10 @@ void CNavFrame::setCurrentIndex(int index) {
 void CNavFrame::setCurrentWidget(QWidget *w) {
     Q_D(const CNavFrame);
     d->stack->setCurrentWidget(w);
+}
+
+void CNavFrame::widgetAdded(QWidget *w, QAbstractButton *btn) {
+}
+
+void CNavFrame::widgetAboutToRemove(QWidget *w, QAbstractButton *btn) {
 }

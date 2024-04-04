@@ -41,6 +41,10 @@ public:
     void setCurrentWidget(QWidget *w);
 
 protected:
+    virtual void widgetAdded(QWidget *w, QAbstractButton *btn);
+    virtual void widgetAboutToRemove(QWidget *w, QAbstractButton *btn);
+
+protected:
     QScopedPointer<CNavFramePrivate> d_ptr;
 
     friend class CNavFramePrivate;

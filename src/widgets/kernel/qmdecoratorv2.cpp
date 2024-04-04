@@ -600,7 +600,7 @@ QString QMDecoratorV2Private::removeAllComments(QString data) {
 }
 
 void QMDecoratorV2Private::_q_themeSubscriberDestroyed() {
-    auto it = themeSubscribers.find(reinterpret_cast<QWidget *>(sender()));
+    auto it = themeSubscribers.find(static_cast<QWidget *>(sender()));
     if (it == themeSubscribers.end()) {
         return;
     }

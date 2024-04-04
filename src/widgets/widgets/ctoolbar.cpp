@@ -109,7 +109,7 @@ QToolBarItem *HackToolBarLayout::createItem(QAction *action) {
 class HackAction : public QAction {
 public:
     QWidgetActionPrivate *d_func() const {
-        return reinterpret_cast<QWidgetActionPrivate *>(d_ptr.data());
+        return static_cast<QWidgetActionPrivate *>(d_ptr.data());
     }
 };
 
