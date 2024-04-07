@@ -23,6 +23,9 @@ public:
     void showMessage(QObject *parent, MessageBoxFlag flag, const QString &title,
                      const QString &text) const override;
 
+public:
+    static QFont systemDefaultFont();
+
 protected:
     QMAppExtension(QMAppExtensionPrivate &d, QObject *parent = nullptr);
 };

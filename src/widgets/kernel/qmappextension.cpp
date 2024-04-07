@@ -19,6 +19,8 @@
 #include <QMessageBox>
 #include <QFontDatabase>
 
+#include <qpa/qplatformfontdatabase.h>
+
 #include <QMCore/qmsystem.h>
 
 #include "qmdecoratorv2.h"
@@ -48,6 +50,13 @@ QMAppExtensionPrivate::QMAppExtensionPrivate() {
 QMAppExtensionPrivate::~QMAppExtensionPrivate() {
 }
 
+static QFont getSystemDefaultWithDpi() {
+    QFont font = QMAppExtension::systemDefaultFont();
+    double ratio = QGuiApplication::primaryScreen()->logicalDotsPerInch() / QM::unitDpi();
+    font.setPixelSize(font.pixelSize() * ratio * 0.8);
+    return font;
+}
+
 void QMAppExtensionPrivate::init() {
     // This is necessary for macOS platforms, so that QIcon will return a
     // pixmap with correct devicePixelRatio when using QIcon::pixmap().
@@ -66,11 +75,7 @@ void QMAppExtensionPrivate::init() {
         }
     }
 
-    QFont font = QGuiApplication::font();
-
-#ifdef Q_OS_WINDOWS
-    // font.setFamily("Microsoft YaHei"); // Consider not using MSYH on non-Chinese Windows platform
-#endif
+    QFont font = getSystemDefaultWithDpi();
 
     // Init font
     if (!appFont.isEmpty()) {
@@ -161,6 +166,33 @@ void QMAppExtension::showMessage(QObject *parent, MessageBoxFlag flag, const QSt
             QMessageBox::information(w, title, text);
             break;
     };
+#endif
+}
+
+/*!
+    Returns the system default font.
+*/
+QFont QMAppExtension::systemDefaultFont() {
+#if defined(Q_OS_WINDOWS) && QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+    NONCLIENTMETRICSW ncm = {0};
+    ncm.cbSize = FIELD_OFFSET(NONCLIENTMETRICSW, lfMessageFont) + sizeof(LOGFONTW);
+    SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0);
+    return [](const LOGFONTW &logFont) {
+        QFont qFont(QString::fromWCharArray(logFont.lfFaceName));
+        qFont.setItalic(logFont.lfItalic);
+        if (logFont.lfWeight != FW_DONTCARE)
+            qFont.setWeight(QPlatformFontDatabase::weightFromInteger(logFont.lfWeight));
+        const qreal logFontHeight = qAbs(logFont.lfHeight);
+        qFont.setPixelSize(qAbs(logFont.lfHeight));
+        qFont.setUnderline(logFont.lfUnderline);
+        qFont.setOverline(false);
+        qFont.setStrikeOut(logFont.lfStrikeOut);
+        return qFont;
+    }(ncm.lfMessageFont);
+#else
+    QFont font = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
+    font.setPixelSize(font.pointSize() / 72.0 * QM::unitDpi());
+    return font;
 #endif
 }
 
