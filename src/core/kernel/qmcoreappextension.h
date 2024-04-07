@@ -38,6 +38,9 @@ public:
     QString appDataDir() const;
     void setAppDataDir(const QString &dir);
 
+    QString userDataDir() const;
+    void setUserDataDir(const QString &dir);
+
     QString tempDir() const;
     void setTempDir(const QString &dir);
 
@@ -53,7 +56,7 @@ public:
     QString appPluginsDir() const;
     void setAppPluginsDir(const QString &dir);
 
-    bool createDataAndTempDirs() const;
+    bool createAppDirs() const;
 
 public:
     static QString configurationPath(QSettings::Scope scope = QSettings::UserScope);

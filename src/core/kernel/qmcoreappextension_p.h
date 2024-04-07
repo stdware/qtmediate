@@ -33,6 +33,7 @@ public:
     bool isAboutToQuit;
 
     QString appDataDir;
+    QString userDataDir;
     QString tempDir;
     QString libDir;
     QString shareDir;
