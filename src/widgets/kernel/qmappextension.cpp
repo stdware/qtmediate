@@ -53,7 +53,7 @@ QMAppExtensionPrivate::~QMAppExtensionPrivate() {
 static QFont getSystemDefaultWithDpi() {
     QFont font = QMAppExtension::systemDefaultFont();
     double ratio = QGuiApplication::primaryScreen()->logicalDotsPerInch() / QM::unitDpi();
-    font.setPixelSize(font.pixelSize() * ratio * 0.8);
+    font.setPixelSize(12 * ratio);
     return font;
 }
 
