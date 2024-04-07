@@ -9,6 +9,7 @@
 #include <QJsonParseError>
 #include <QMessageLogger>
 #include <QSettings>
+#include <QStandardPaths>
 
 #include "qmsystem.h"
 
@@ -53,6 +54,8 @@ void QMCoreAppExtensionPrivate::init() {
 
     // Basic directories
     appDataDir = QM::appDataPath() + "/" + qApp->organizationName() + "/" + qApp->applicationName();
+    userDataDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/" +
+                  qApp->organizationName() + "/" + qApp->applicationName();
     tempDir = QDir::tempPath() + "/" + qApp->organizationName() + "/" + qApp->applicationName();
 
     libDir = appUpperDir() + "/" + DEFAULT_LIBRARY_DIR;
@@ -60,6 +63,7 @@ void QMCoreAppExtensionPrivate::init() {
 
     configVars.addHash(QMSimpleVarExp::systemValues());
     configVars.add("DEFAULT_APPDATA", appDataDir);
+    configVars.add("DEFAULT_USERDATA", userDataDir);
     configVars.add("DEFAULT_TEMP", tempDir);
 
     // Read configurations
@@ -394,6 +398,25 @@ void QMCoreAppExtension::setAppDataDir(const QString &dir) {
 }
 
 /*!
+    Returns user data directory.
+
+    \li On Mac/Linux, the default path is <tt>\%HOME\%/Documents/\%ORG\%/\%AppName\%</tt>
+    \li On Windows, the default path is <tt>\%UserProfile\%/Documents/\%ORG\%/\%AppName\%</tt>
+ */
+QString QMCoreAppExtension::userDataDir() const {
+    Q_D(const QMCoreAppExtension);
+    return d->userDataDir;
+}
+
+/*!
+    Sets the user data directory.
+*/
+void QMCoreAppExtension::setUserDataDir(const QString &dir) {
+    Q_D(QMCoreAppExtension);
+    d->userDataDir = dir;
+}
+
+/*!
     Returns the application temporary directory.
 
     \li On Mac/Linux, the default path is <tt>\%TMPDIR\%</tt>
@@ -491,7 +514,7 @@ void QMCoreAppExtension::setAppPluginsDir(const QString &dir) {
 /*!
     Creates data and temp directories for further use, returns true if success.
 */
-bool QMCoreAppExtension::createDataAndTempDirs() const {
+bool QMCoreAppExtension::createAppDirs() const {
     static const auto &func = [](const QString &path) {
         qCDebug(qAppExtLog) << "qmcorehost:" << (QM::isDirExist(path) ? "find" : "create")
                             << "directory" << path;
@@ -499,6 +522,10 @@ bool QMCoreAppExtension::createDataAndTempDirs() const {
     };
 
     if (!func(appDataDir())) {
+        return false;
+    }
+
+    if (!func(userDataDir())) {
         return false;
     }
 
