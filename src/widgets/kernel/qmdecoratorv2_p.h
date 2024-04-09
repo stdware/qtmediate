@@ -42,7 +42,7 @@ public:
     mutable QHash<QString, QStringList> nsMappings;            // widgetKey - namespaces
     mutable QHash<QString, QHash<QString, QString>> variables; // themeKey - [ varKey - var ]
 
-    static int globalImageCacheSerialNum;
+    // static int globalImageCacheSerialNum;
 
     static QString replaceSizes(const QString &stylesheet, double ratio, bool rounding);
     static QString replaceCustomKeyWithQProperty(const QString &stylesheet);

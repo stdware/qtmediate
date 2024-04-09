@@ -9,6 +9,7 @@
 #include <QJsonObject>
 #include <QRegularExpression>
 #include <QWindow>
+#include <QPixmapCache>
 
 #include <QMCore/qmchronoset.h>
 #include <QMCore/qmsimplevarexp.h>
@@ -229,7 +230,7 @@ static QString parsePlatformString(const QJsonValue &val, const QString &default
         [](const QJsonValue &val) { return val.toString(); }, defaultValue);
 }
 
-int QMDecoratorV2Private::globalImageCacheSerialNum = 0;
+// int QMDecoratorV2Private::globalImageCacheSerialNum = 0;
 
 void QMDecoratorV2Private::scanForThemes() const {
     stylesheetCaches.clear();
@@ -727,7 +728,8 @@ void QMDecoratorV2::setTheme(const QString &theme) {
     }
 
     d->currentTheme = theme;
-    QMDecoratorV2Private::globalImageCacheSerialNum++;
+    // QMDecoratorV2Private::globalImageCacheSerialNum++;
+    QPixmapCache::clear(); // Clear icon caches
 
     for (const auto &item : qAsConst(d->themeSubscribers)) {
         item->updateScreen();
