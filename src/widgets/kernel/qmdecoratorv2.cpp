@@ -17,8 +17,6 @@
 
 #include <QMCore/private/qmcoredecoratorv2_p.h>
 
-static constexpr const char DEFAULT_THEME[] = "Visual Studio Code - Dark";
-
 class ThemeGuardV2 : public QObject {
 public:
     explicit ThemeGuardV2(QWidget *w, QMDecoratorV2Private *parent);
@@ -170,7 +168,7 @@ QMDecoratorV2Private::~QMDecoratorV2Private() {
 }
 
 void QMDecoratorV2Private::init() {
-    currentTheme = DEFAULT_THEME;
+    currentTheme = QString();
 }
 
 namespace {
