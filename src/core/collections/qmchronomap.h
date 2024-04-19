@@ -5,6 +5,11 @@
 #include <vector>
 #include <unordered_map>
 
+#ifdef QT_CORE_LIB
+#  include <QList>
+#  include <QVector>
+#endif
+
 template <class K, class T, class H = std::hash<K>>
 class QMChronoMap {
 private:
@@ -295,7 +300,7 @@ public:
     }
 
     const_iterator constFind(const K &key) const {
-        auto it = m_map.constFind(key);
+        auto it = m_map.find(key);
         if (it != m_map.cend()) {
             return const_iterator(it->second);
         }
@@ -361,15 +366,50 @@ public:
         }
         return res;
     }
-
+#ifdef QT_CORE_LIB
+    QList<K> keys_qlist() const {
+        QList<K> res;
+        res.reserve(m_list.size());
+        for (const auto &item : qAsConst(m_list)) {
+            res.push_back(item.first);
+        }
+        return res;
+    }
+    QVector<K> keys_qvector() const {
+        QVector<K> res;
+        res.reserve(m_list.size());
+        for (const auto &item : qAsConst(m_list)) {
+            res.push_back(item.first);
+        }
+        return res;
+    }
+#endif
     std::vector<T> values() const {
         std::vector<T> res;
+        res.reserve(m_list.size());
         for (const auto &item : qAsConst(m_list)) {
             res.push_back(item.second);
         }
         return res;
     }
-
+#ifdef QT_CORE_LIB
+    QList<T> values_qlist() const {
+        QList<T> res;
+        res.reserve(m_list.size());
+        for (const auto &item : qAsConst(m_list)) {
+            res.push_back(item.second);
+        }
+        return res;
+    }
+    QVector<T> values_qvector() const {
+        QVector<T> res;
+        res.reserve(m_list.size());
+        for (const auto &item : qAsConst(m_list)) {
+            res.push_back(item.second);
+        }
+        return res;
+    }
+#endif
     int capacity() const {
         return m_map.capacity();
     }

@@ -5,6 +5,11 @@
 #include <vector>
 #include <unordered_map>
 
+#ifdef QT_CORE_LIB
+#  include <QList>
+#  include <QVector>
+#endif
+
 template <class K, class H = std::hash<K>>
 class QMChronoSet {
 private:
@@ -237,7 +242,7 @@ public:
     }
 
     const_iterator constFind(const K &key) const {
-        auto it = m_map.constFind(key);
+        auto it = m_map.find(key);
         if (it != m_map.cend()) {
             return const_iterator(it->second);
         }
@@ -284,6 +289,14 @@ public:
     std::vector<K> values() const {
         return {m_list.begin(), m_list.end()};
     }
+#ifdef QT_CORE_LIB
+    QList<K> values_qlist() const {
+        return {m_list.begin(), m_list.end()};
+    }
+    QVector<K> values_qvector() const {
+        return {m_list.begin(), m_list.end()};
+    }
+#endif
     int capacity() const {
         return m_map.capacity();
     }
