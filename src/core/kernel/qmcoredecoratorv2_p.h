@@ -18,7 +18,6 @@
 #include <QMCore/qmcoredecoratorv2.h>
 
 class QM_CORE_EXPORT QMCoreDecoratorV2Private : public QObject {
-    Q_OBJECT
     Q_DECLARE_PUBLIC(QMCoreDecoratorV2)
 public:
     QMCoreDecoratorV2Private();
