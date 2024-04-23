@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include <QMCore/qmglobal.h>
+#include <QMCore/qmnamespace.h>
 
 #define qIDec QMCoreDecoratorV2::instance()
 
@@ -28,6 +28,30 @@ public:
     void refreshLocale();
 
     void installLocale(QObject *o, const std::function<void()> &updater);
+
+    template <class Object>
+    void installLocale(Object *o) {
+        static_assert(std::is_base_of<QObject, Object>::value, "T should inherit from QObject");
+        installLocale(o, std::bind(&Object::reloadStrings, o));
+    }
+
+    template <class Func>
+    void installLocale(typename QtPrivate::FunctionPointer<Func>::Object *o, Func slot) {
+        static_assert(std::is_base_of<QObject, decltype(*o)>::value,
+                      "T should inherit from QObject");
+        installLocale(o, std::bind(slot, o));
+    }
+
+    template <class Object>
+    void installLocale(QObject *o, Object *receiver) {
+        installLocale(o, std::bind(&Object::reloadStrings, receiver));
+    }
+
+    template <class Func>
+    void installLocale(QObject *o, typename QtPrivate::FunctionPointer<Func>::Object *receiver,
+                       Func slot) {
+        installLocale(o, std::bind(slot, receiver));
+    }
 
 Q_SIGNALS:
     void localeChanged(const QString &locale);

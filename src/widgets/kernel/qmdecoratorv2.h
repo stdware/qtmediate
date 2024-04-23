@@ -44,8 +44,4 @@ protected:
     QMDecoratorV2(QMDecoratorV2Private &d, QObject *parent = nullptr);
 };
 
-#ifndef _LOC
-#  define _LOC(T, P) std::bind(&T::reloadStrings, P)
-#endif
-
 #endif // QMDECORATORV2_H
