@@ -6,19 +6,15 @@
 #include <QDir>
 #include <QStandardPaths>
 
-static const char Slash = '/';
-
-static const char DefaultPattern[] = R"(\$\{(\w+)\})";
-
 /*!
     \class QMSimpleVarExp
     \brief Variable expression parsing class.
 */
 
 /*!
-    Constructs an instance with the default escaping pattern <tt>${XXX}</tt>.
+    Constructs an instance with the default escaping pattern <tt>\w+</tt>.
 */
-QMSimpleVarExp::QMSimpleVarExp() : QMSimpleVarExp(DefaultPattern) {
+QMSimpleVarExp::QMSimpleVarExp() : Pattern(QStringLiteral("\\w+")) {
 }
 
 /*!
@@ -101,36 +97,38 @@ void QMSimpleVarExp::clear() {
 /*!
     \internal
 */
-static QString dfs(QString s, const QRegularExpression &reg, const QHash<QString, QString> &vars,
-                   bool recursive = true) {
-    QRegularExpressionMatch match;
-    int index = 0;
-    bool hasMatch = false;
-    while ((index = s.indexOf(reg, index, &match)) != -1) {
-        hasMatch = true;
+static QString parseExpression(QString s, const QHash<QString, QString> &vars,
+                               const QString &pattern) {
+    QRegularExpression reg(QStringLiteral(R"((?<!\$)(?:\$\$)*\$\{(%1)\})").arg(pattern));
+    bool hasMatch;
+    do {
+        hasMatch = false;
 
-        const auto &name = match.captured(1);
-        QString val;
-        auto it = vars.find(name);
-        if (it == vars.end()) {
-            val = name;
-        } else {
-            val = it.value();
+        int index = 0;
+        QRegularExpressionMatch match;
+        while ((index = s.indexOf(reg, index, &match)) != -1) {
+            hasMatch = true;
+            const auto &name = match.captured(1);
+            QString val;
+            auto it = vars.find(name);
+            if (it == vars.end()) {
+                val = name;
+            } else {
+                val = it.value();
+            }
+
+            s.replace(index, match.captured(0).size(), val);
         }
-
-        s.replace(index, match.captured(0).size(), val);
-    }
-    if (!hasMatch) {
-        return s;
-    }
-    return dfs(s, reg, vars);
+    } while (hasMatch);
+    s.replace(QStringLiteral("$$"), QStringLiteral("$"));
+    return s;
 }
 
 /*!
     Parses the given expression.
 */
 QString QMSimpleVarExp::parse(const QString &exp) const {
-    return dfs(exp, QRegularExpression(Pattern), Variables);
+    return parseExpression(exp, Variables, Pattern);
 }
 
 /*!
@@ -165,5 +163,5 @@ QHash<QString, QString> QMSimpleVarExp::systemValues() {
 */
 QString QMSimpleVarExp::evaluate(const QString &s, const QHash<QString, QString> &dict,
                                  const QString &pattern) {
-    return dfs(s, QRegularExpression(pattern.isEmpty() ? DefaultPattern : pattern), dict);
+    return parseExpression(s, dict, pattern.isEmpty() ? QStringLiteral("\\w+") : pattern);
 }

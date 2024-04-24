@@ -90,7 +90,7 @@ void ThemeGuardV2::updateScreen() {
 
                     // Evaluate variables
                     stylesheet = QMSimpleVarExp::evaluate(
-                        stylesheet, d->variables.value(curTheme, {}), R"(\$\{([^\}]+)\})");
+                        stylesheet, d->variables.value(curTheme, {}), R"([^\}]+)");
 
                     stylesheet = QMDecoratorV2Private::replaceSizes(
                         stylesheet, screen->logicalDotsPerInch() / QM::unitDpi(), true);
