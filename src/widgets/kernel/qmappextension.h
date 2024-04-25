@@ -25,6 +25,7 @@ public:
 
 public:
     static QFont systemDefaultFont();
+    static QFont systemDefaultFontWithDpi(double dpi = -1);
 
 protected:
     QMAppExtension(QMAppExtensionPrivate &d, QObject *parent = nullptr);

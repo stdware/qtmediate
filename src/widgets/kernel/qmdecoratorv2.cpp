@@ -10,6 +10,7 @@
 #include <QRegularExpression>
 #include <QWindow>
 #include <QPixmapCache>
+#include <QTimer>
 
 #include <QMCore/qmchronoset.h>
 #include <QMCore/qmsimplevarexp.h>
@@ -17,10 +18,14 @@
 
 #include <QMCore/private/qmcoredecoratorv2_p.h>
 
-class ThemeGuardV2 : public QObject {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#  define AUTO_SYNC_WITH_DPI
+#endif
+
+class QMDecoratorThemeGuardV2 : public QObject {
 public:
-    explicit ThemeGuardV2(QWidget *w, QMDecoratorV2Private *parent);
-    ~ThemeGuardV2();
+    explicit QMDecoratorThemeGuardV2(QWidget *w, QMDecoratorV2Private *parent);
+    ~QMDecoratorThemeGuardV2();
 
     QWidget *w;
     QWindow *winHandle;
@@ -39,20 +44,22 @@ public:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
 
+#ifdef AUTO_SYNC_WITH_DPI
 private:
     void _q_logicalRatioChanged(double dpi);
+#endif
 };
 
-ThemeGuardV2::ThemeGuardV2(QWidget *w, QMDecoratorV2Private *parent)
+QMDecoratorThemeGuardV2::QMDecoratorThemeGuardV2(QWidget *w, QMDecoratorV2Private *parent)
     : QObject(parent), w(w), d(parent), winHandle(nullptr) {
     needUpdate = false;
     w->installEventFilter(this);
 }
 
-ThemeGuardV2::~ThemeGuardV2() {
+QMDecoratorThemeGuardV2::~QMDecoratorThemeGuardV2() {
 }
 
-void ThemeGuardV2::updateScreen() {
+void QMDecoratorThemeGuardV2::updateScreen() {
     if (!screen) {
         switchScreen(w->screen());
         return;
@@ -68,7 +75,7 @@ void ThemeGuardV2::updateScreen() {
 
         QString base = theme;
         QMChronoSet<QString> bases{base};
-        while (!(base = d->variables.value(base).value("_base")).isEmpty() &&
+        while (!(base = d->variables.value(base).value(QStringLiteral("_base"))).isEmpty() &&
                !bases.contains(base) // Avoid recursively referenced
         ) {
             bases.prepend(base);
@@ -90,13 +97,27 @@ void ThemeGuardV2::updateScreen() {
 
                     // Evaluate variables
                     stylesheet = QMSimpleVarExp::evaluate(
-                        stylesheet, d->variables.value(curTheme, {}), R"([^\}]+)");
+                        stylesheet, d->variables.value(curTheme, {}), QStringLiteral(R"([^\}]+)"));
 
-                    stylesheet = QMDecoratorV2Private::replaceSizes(
-                        stylesheet, screen->logicalDotsPerInch() / QM::unitDpi(), true);
+                    // Replace font sizes
+                    if (d->fontRatio != 1 && d->fontRatio > 0) {
+                        stylesheet =
+                            QMDecoratorV2Private::replaceFontSizes(stylesheet, d->fontRatio, false);
+                    }
+
+                    // Apply dpi and zoom ratio
+#ifdef AUTO_SYNC_WITH_DPI
+                    double ratio = screen->logicalDotsPerInch() / QM::unitDpi();
+#else
+                    double ratio = 1.0;
+#endif
+                    ratio *= d->zoomRatio;
+                    if (ratio != 1 && ratio > 0) {
+                        stylesheet = QMDecoratorV2Private::replaceSizes(stylesheet, ratio, true);
+                    }
 
                     // Zoom
-                    allStylesheets += stylesheet + "\n\n";
+                    allStylesheets += stylesheet + QStringLiteral("\n\n");
                 }
             }
         }
@@ -104,9 +125,9 @@ void ThemeGuardV2::updateScreen() {
         return allStylesheets;
     };
 
-    QString stylesheets = getStyleSheet("_common");
+    QString stylesheets = getStyleSheet(QStringLiteral("_common"));
     if (!stylesheets.isEmpty()) {
-        stylesheets += "\n\n";
+        stylesheets += QStringLiteral("\n\n");
     }
     stylesheets += getStyleSheet(d->currentTheme);
 
@@ -118,22 +139,23 @@ void ThemeGuardV2::updateScreen() {
     w->setStyleSheet(stylesheets);
 }
 
-void ThemeGuardV2::switchScreen(QScreen *screen) {
+void QMDecoratorThemeGuardV2::switchScreen(QScreen *screen) {
     if (!screen || this->screen == screen)
         return;
-
+#ifdef AUTO_SYNC_WITH_DPI
     if (this->screen) {
         disconnect(this->screen.data(), &QScreen::logicalDotsPerInchChanged, this,
-                   &ThemeGuardV2::_q_logicalRatioChanged);
+                   &QMDecoratorThemeGuardV2::_q_logicalRatioChanged);
     }
     this->screen = screen;
     connect(screen, &QScreen::logicalDotsPerInchChanged, this,
-            &ThemeGuardV2::_q_logicalRatioChanged);
+            &QMDecoratorThemeGuardV2::_q_logicalRatioChanged);
+#endif
 
     updateScreen();
 }
 
-bool ThemeGuardV2::eventFilter(QObject *obj, QEvent *event) {
+bool QMDecoratorThemeGuardV2::eventFilter(QObject *obj, QEvent *event) {
     switch (event->type()) {
         case QEvent::PolishRequest: {
             break;
@@ -141,7 +163,8 @@ bool ThemeGuardV2::eventFilter(QObject *obj, QEvent *event) {
         case QEvent::Show: {
             if (!winHandle) {
                 winHandle = w->window()->windowHandle();
-                connect(winHandle, &QWindow::screenChanged, this, &ThemeGuardV2::switchScreen);
+                connect(winHandle, &QWindow::screenChanged, this,
+                        &QMDecoratorThemeGuardV2::switchScreen);
 
                 if (needUpdate) {
                     updateScreen();
@@ -155,13 +178,18 @@ bool ThemeGuardV2::eventFilter(QObject *obj, QEvent *event) {
     return QObject::eventFilter(obj, event);
 }
 
-void ThemeGuardV2::_q_logicalRatioChanged(double dpi) {
+#ifdef AUTO_SYNC_WITH_DPI
+void QMDecoratorThemeGuardV2::_q_logicalRatioChanged(double dpi) {
     Q_UNUSED(dpi)
 
     updateScreen();
 }
+#endif
 
 QMDecoratorV2Private::QMDecoratorV2Private() {
+    fontRatio = 1.0;
+    zoomRatio = 1.0;
+    hasPendingRefreshTask = false;
 }
 
 QMDecoratorV2Private::~QMDecoratorV2Private() {
@@ -187,26 +215,34 @@ namespace {
 
 }
 
+static const QStringList &platformKeys() {
+    static QStringList keys{
+#ifdef Q_OS_WINDOWS
+        QStringLiteral("win"),
+        QStringLiteral("win32"),
+        QStringLiteral("windows"),
+#elif defined(Q_OS_LINUX)
+        QStringLiteral("linux"),
+#else
+        QStringLiteral("mac"),
+        QStringLiteral("macos"),
+        QStringLiteral("osx"),
+        QStringLiteral("macosx"),
+#endif
+    };
+    return keys;
+}
+
 template <class T>
 static T parsePlatform(const QJsonValue &val, bool(predicate)(const QJsonValue &),
                        T(convert)(const QJsonValue &), const T &defaultValue = T{}) {
-    QStringList platformKeys{
-#ifdef Q_OS_WINDOWS
-        "win", "win32", "windows"
-#elif defined(Q_OS_LINUX)
-        "linux"
-#else
-        "mac", "macos", "macosx"
-#endif
-    };
-
     if (predicate(val)) {
         return convert(val);
     }
 
     auto obj = val.toObject();
     for (auto it = obj.begin(); it != obj.end(); ++it) {
-        if (platformKeys.contains(it.key(), Qt::CaseInsensitive)) {
+        if (platformKeys().contains(it.key(), Qt::CaseInsensitive)) {
             if (predicate(it.value())) {
                 return convert(it.value());
             }
@@ -242,7 +278,8 @@ void QMDecoratorV2Private::scanForThemes() const {
             const QDir dir(searchPaths.takeFirst());
             const QFileInfoList files = dir.entryInfoList(QDir::Files | QDir::NoSymLinks);
             foreach (const QFileInfo &file, files) {
-                if (!file.completeSuffix().compare("res.json", Qt::CaseInsensitive)) {
+                if (!file.completeSuffix().compare(QStringLiteral("res.json"),
+                                                   Qt::CaseInsensitive)) {
                     searchFiles.append(file);
                 }
             }
@@ -279,17 +316,17 @@ void QMDecoratorV2Private::scanForThemes() const {
         QJsonValue value;
 
         // Get default values
-        value = objDoc.value("config");
+        value = objDoc.value(QStringLiteral("config"));
         if (!value.isUndefined() && value.isObject()) {
             auto obj = value.toObject();
-            value = obj.value("ratio");
+            value = obj.value(QStringLiteral("ratio"));
             if (!value.isUndefined()) {
                 auto _tmp = parsePlatformDouble(value);
                 if (_tmp > 0)
                     ratio = _tmp;
             }
 
-            value = obj.value("priority");
+            value = obj.value(QStringLiteral("priority"));
             if (!value.isUndefined()) {
                 auto _tmp = parsePlatformDouble(value, -1);
                 if (_tmp >= 0)
@@ -297,7 +334,7 @@ void QMDecoratorV2Private::scanForThemes() const {
             }
         }
 
-        value = objDoc.value("variables");
+        value = objDoc.value(QStringLiteral("variables"));
         if (!value.isUndefined() && value.isObject()) {
             auto obj = value.toObject();
             for (auto it0 = obj.begin(); it0 != obj.end(); ++it0) {
@@ -320,11 +357,11 @@ void QMDecoratorV2Private::scanForThemes() const {
 
                     if (it->isObject()) {
                         auto varObj = it->toObject();
-                        value = varObj.value("priority");
+                        value = varObj.value(QStringLiteral("priority"));
                         if (value.isDouble()) {
                             priority = value.toDouble();
                         }
-                        value = varObj.value("value");
+                        value = varObj.value(QStringLiteral("value"));
                         if (value.isString()) {
                             val = value.toString();
                         }
@@ -349,19 +386,19 @@ void QMDecoratorV2Private::scanForThemes() const {
             QssItem item{ratio, {}, {}};
             QJsonValue value;
 
-            value = obj.value("file");
+            value = obj.value(QStringLiteral("file"));
             if (!value.isUndefined()) {
                 QString fileName = parsePlatformString(value);
                 if (!fileName.isEmpty()) {
                     if (QDir::isRelativePath(fileName)) {
-                        fileName = file.absolutePath() + "/" + fileName;
+                        fileName = file.absolutePath() + QStringLiteral("/") + fileName;
                     }
                     item.fileName = fileName;
                     goto out;
                 }
             }
 
-            value = obj.value("content");
+            value = obj.value(QStringLiteral("content"));
             if (!value.isUndefined()) {
                 QString content = parsePlatformString(value);
                 if (!content.isEmpty()) {
@@ -373,7 +410,7 @@ void QMDecoratorV2Private::scanForThemes() const {
             return;
 
         out:
-            value = obj.value("ratio");
+            value = obj.value(QStringLiteral("ratio"));
             if (!value.isUndefined()) {
                 auto _tmp = parsePlatformDouble(value);
                 if (_tmp > 0)
@@ -382,7 +419,7 @@ void QMDecoratorV2Private::scanForThemes() const {
 
             auto _priority = priority;
 
-            value = obj.value("priority");
+            value = obj.value(QStringLiteral("priority"));
             if (!value.isUndefined()) {
                 auto _tmp = parsePlatformDouble(value, -1);
                 if (_tmp >= 0)
@@ -393,7 +430,7 @@ void QMDecoratorV2Private::scanForThemes() const {
         };
 
         // Get namespaces
-        value = objDoc.value("widgets");
+        value = objDoc.value(QStringLiteral("widgets"));
         if (!value.isUndefined() && value.isObject()) {
             auto obj = value.toObject();
             for (auto it = obj.begin(); it != obj.end(); ++it) {
@@ -410,7 +447,7 @@ void QMDecoratorV2Private::scanForThemes() const {
             }
         }
 
-        value = objDoc.value("stylesheets");
+        value = objDoc.value(QStringLiteral("stylesheets"));
         if (!value.isUndefined() && value.isObject()) {
             auto obj = value.toObject();
             for (auto it = obj.begin(); it != obj.end(); ++it) {
@@ -473,7 +510,8 @@ void QMDecoratorV2Private::scanForThemes() const {
 
                     // Replace relative paths
                     QFileInfo info(item.fileName);
-                    content.replace(QRegularExpression(R"(@[/\\])"), info.absolutePath() + "/");
+                    content.replace(QRegularExpression(QStringLiteral(R"(@[/\\])")),
+                                    info.absolutePath() + QStringLiteral("/"));
                     f.close();
                 } else {
                     content = item.content;
@@ -483,7 +521,8 @@ void QMDecoratorV2Private::scanForThemes() const {
                     continue;
                 }
 
-                res.append(QMDecoratorV2::evaluateStyleSheet(content, item.ratio) + "\n\n");
+                res.append(QMDecoratorV2::evaluateStyleSheet(content, item.ratio) +
+                           QStringLiteral("\n\n"));
             }
         }
 
@@ -509,93 +548,136 @@ void QMDecoratorV2Private::scanForThemes() const {
     themeFilesDirty = false;
 }
 
-QString QMDecoratorV2Private::replaceSizes(const QString &stylesheet, double ratio, bool rounding) {
-    QRegularExpression re(R"([0-9]+(\.[0-9]+|)px)");
+QString QMDecoratorV2Private::replaceFontSizes(const QString &stylesheet, double ratio,
+                                               bool rounding) {
+    static QRegularExpression re(QStringLiteral(R"(font-size\s*:\s*([0-9]+(\.[0-9]+|)px)\s*;)"));
     QRegularExpressionMatch match;
     int index = 0;
+    int lastIndex = 0;
+    QString result;
+    result.reserve(stylesheet.size());
+    while ((index = stylesheet.indexOf(re, index, &match)) != -1) {
+        result += stylesheet.midRef(lastIndex, index - lastIndex);
 
-    QString Content = stylesheet;
-
-    while ((index = Content.indexOf(re, index, &match)) != -1) {
-        QString MatchString = match.captured();
-
-        double size = MatchString.mid(0, MatchString.size() - 2).toDouble();
+        QString matchString = match.captured(1);
+        double size = matchString.midRef(0, matchString.size() - 2).toDouble();
         size *= ratio;
-        QString ValueString =
-            (rounding ? QString::number(int(size)) : QString::number(size)) + "px";
-
-        Content.replace(index, MatchString.size(), ValueString);
-        index += ValueString.size();
+        QString valueString = QStringLiteral("font-size: ") +
+                              (rounding ? QString::number(int(size)) : QString::number(size)) +
+                              QStringLiteral("px;");
+        result += valueString;
+        index += match.captured().size();
+        lastIndex = index;
     }
+    result += stylesheet.midRef(lastIndex);
+    return result;
+}
 
-    return Content;
+QString QMDecoratorV2Private::replaceSizes(const QString &stylesheet, double ratio, bool rounding) {
+    static QRegularExpression re(QStringLiteral(R"([0-9]+(\.[0-9]+|)px)"));
+
+    QRegularExpressionMatch match;
+    int index = 0;
+    int lastIndex = 0;
+    QString result;
+    result.reserve(stylesheet.size());
+    while ((index = stylesheet.indexOf(re, index, &match)) != -1) {
+        result += stylesheet.midRef(lastIndex, index - lastIndex);
+
+        QString matchString = match.captured();
+        double size = matchString.midRef(0, matchString.size() - 2).toDouble();
+        size *= ratio;
+        QString valueString =
+            (rounding ? QString::number(int(size)) : QString::number(size)) + QStringLiteral("px");
+
+        result += valueString;
+        index += matchString.size();
+        lastIndex = index;
+    }
+    result += stylesheet.midRef(lastIndex);
+    return result;
 }
 
 QString QMDecoratorV2Private::replaceCustomKeyWithQProperty(const QString &stylesheet) {
     // Replace "--key: value;" with "qproperty-key: value;"
     // Replace "---key: value;" with "key: value;"
-    QRegularExpression re(R"((\{|;|^)\s*(--|---)\w(\w|-)*:)",
-                          QRegularExpression::MultilineOption |
-                              QRegularExpression::DotMatchesEverythingOption);
+    static QRegularExpression re(QStringLiteral(R"((\{|;|^)\s*(--|---)\w(\w|-)*:)"),
+                                 QRegularExpression::MultilineOption |
+                                     QRegularExpression::DotMatchesEverythingOption);
     QRegularExpressionMatch match;
     int index = 0;
+    int lastIndex = 0;
+    QString result;
+    result.reserve(stylesheet.size());
+    while ((index = stylesheet.indexOf(re, index, &match)) != -1) {
+        result += stylesheet.midRef(lastIndex, index - lastIndex);
 
-    QString Content = stylesheet;
-    while ((index = Content.indexOf(re, index, &match)) != -1) {
-        QString MatchString = match.captured();
-        QString ValueString = MatchString;
-
+        QString matchString = match.captured();
         int capturedIndex = match.capturedStart(2) - index;
         int capturedLen = match.capturedLength(2);
-        ValueString.replace(capturedIndex, capturedLen, capturedLen == 2 ? "qproperty-" : "");
+        QString valueString = matchString;
+        valueString.replace(capturedIndex, capturedLen,
+                            capturedLen == 2 ? QStringLiteral("qproperty-") : "");
 
-        Content.replace(index, MatchString.size(), ValueString);
-        index += ValueString.size();
+        result += valueString;
+        index += matchString.size();
+        lastIndex = index;
     }
-
-    return Content;
+    result += stylesheet.midRef(lastIndex);
+    return result;
 }
 
 QString QMDecoratorV2Private::replaceCssGrammars(const QString &stylesheet) {
-    QString Content = stylesheet;
+    QString result;
+    result.reserve(stylesheet.size());
 
     // Replace ":not(:xxx)" with ":!xxx"
     {
-        QRegularExpression re(R"(:not\(\s*:([^)]+)\s*\))",
-                              QRegularExpression::MultilineOption |
-                                  QRegularExpression::DotMatchesEverythingOption);
+        static QRegularExpression re(QStringLiteral(R"(:not\(\s*:([^)]+)\s*\))"),
+                                     QRegularExpression::MultilineOption |
+                                         QRegularExpression::DotMatchesEverythingOption);
         QRegularExpressionMatch match;
         int index = 0;
+        int lastIndex = 0;
+        while ((index = stylesheet.indexOf(re, index, &match)) != -1) {
+            result += stylesheet.midRef(lastIndex, index - lastIndex);
 
-        while ((index = Content.indexOf(re, index, &match)) != -1) {
-            QString MatchString = match.captured();
-            QString ValueString = ":!" + match.captured(1).trimmed();
-
-            Content.replace(index, MatchString.size(), ValueString);
-            index += ValueString.size();
+            QString matchString = match.captured();
+            QString valueString = QStringLiteral(":!") + match.captured(1).trimmed();
+            result += valueString;
+            index += matchString.size();
+            lastIndex = index;
         }
+        result += stylesheet.midRef(lastIndex);
     }
 
     // Replace "svg(...);" to "url(\"[[...]].svgx\");"
     {
-        QRegularExpression re(R"(svg\((.*?)\)(;|\s*\}))",
-                              QRegularExpression::MultilineOption |
-                                  QRegularExpression::DotMatchesEverythingOption);
-        Content.replace(re, R"(url("[[\1]].svgx")\2)");
+        static QRegularExpression re(QStringLiteral(R"(svg\((.*?)\)(;|\s*\}))"),
+                                     QRegularExpression::MultilineOption |
+                                         QRegularExpression::DotMatchesEverythingOption);
+        result.replace(re, QStringLiteral(R"(url("[[\1]].svgx")\2)"));
     }
-
-    return Content;
+    return result;
 }
 
-QString QMDecoratorV2Private::removeAllComments(QString data) {
-    QRegularExpression reg(R"(\/\*(.*?)\*\/)", QRegularExpression::MultilineOption |
-                                                   QRegularExpression::DotMatchesEverythingOption);
+QString QMDecoratorV2Private::removeAllComments(const QString &stylesheet) {
+    static QRegularExpression re(QStringLiteral(R"(\/\*(.*?)\*\/)"),
+                                 QRegularExpression::MultilineOption |
+                                     QRegularExpression::DotMatchesEverythingOption);
     QRegularExpressionMatch match;
     int index = 0;
-    while ((index = data.indexOf(reg, index, &match)) != -1) {
-        data.remove(index, match.captured(0).size());
+    int lastIndex = 0;
+    QString result;
+    result.reserve(stylesheet.size());
+    while ((index = stylesheet.indexOf(re, index, &match)) != -1) {
+        result += stylesheet.midRef(lastIndex, index - lastIndex);
+
+        index += match.captured(0).size();
+        lastIndex = index;
     }
-    return data;
+    result += stylesheet.midRef(lastIndex);
+    return result;
 }
 
 void QMDecoratorV2Private::_q_themeSubscriberDestroyed() {
@@ -630,7 +712,8 @@ QMDecoratorV2::~QMDecoratorV2() {
     Expands all QtMediate extension syntax in the given string and returns the standard Qt
     StyleSheet.
 */
-QString QMDecoratorV2::evaluateStyleSheet(const QString &stylesheet, double ratio) {
+QString QMDecoratorV2::evaluateStyleSheet(const QString &stylesheet, double ratio,
+                                          double fontRatio) {
     QString content = stylesheet;
 
     // Remove comments
@@ -642,10 +725,15 @@ QString QMDecoratorV2::evaluateStyleSheet(const QString &stylesheet, double rati
     // Replace CSS grammars
     content = QMDecoratorV2Private::replaceCssGrammars(content);
 
+    // Replace font sizes
+    if (fontRatio != 1 && fontRatio > 0) {
+        content = QMDecoratorV2Private::replaceFontSizes(content, fontRatio, false);
+    }
+
+    // Replace pixel sizes
     if (ratio != 1 && ratio > 0) {
         content = QMDecoratorV2Private::replaceSizes(content, ratio, false);
     }
-
     return content;
 }
 
@@ -701,7 +789,7 @@ QStringList QMDecoratorV2::themes() const {
         d->scanForThemes();
     }
     QStringList res = d->stylesheetCaches.keys();
-    res.removeOne("_common");
+    res.removeOne(QStringLiteral("_common"));
     return res;
 }
 
@@ -718,6 +806,8 @@ QString QMDecoratorV2::theme() const {
 */
 void QMDecoratorV2::setTheme(const QString &theme) {
     Q_D(QMDecoratorV2);
+
+    d->hasPendingRefreshTask = false;
 
     if (d->themeFilesDirty) {
         d->scanForThemes();
@@ -743,6 +833,15 @@ void QMDecoratorV2::refreshTheme() {
     setTheme(d->currentTheme);
 }
 
+void QMDecoratorV2::deferRefreshTheme() {
+    Q_D(QMDecoratorV2);
+    if (d->hasPendingRefreshTask)
+        return;
+    d->hasPendingRefreshTask = true;
+
+    QTimer::singleShot(0, this, &QMDecoratorV2::refreshTheme);
+}
+
 /*!
     Returns the value defined in current theme configuration that is the mapping of the key.
 */
@@ -751,9 +850,35 @@ QString QMDecoratorV2::themeVariable(const QString &key) const {
     return d->variables.value(d->currentTheme, {}).value(key);
 }
 
+double QMDecoratorV2::fontRatio() const {
+    Q_D(const QMDecoratorV2);
+    return d->fontRatio;
+}
+
+void QMDecoratorV2::setFontRatio(double ratio) {
+    Q_D(QMDecoratorV2);
+    if (ratio <= 0 || ratio > 3)
+        return;
+    d->fontRatio = ratio;
+    deferRefreshTheme();
+}
+
+double QMDecoratorV2::zoomRatio() const {
+    Q_D(const QMDecoratorV2);
+    return d->zoomRatio;
+}
+
+void QMDecoratorV2::setZoomRatio(double ratio) {
+    Q_D(QMDecoratorV2);
+    if (ratio <= 0 || ratio > 3)
+        return;
+    d->zoomRatio = ratio;
+    deferRefreshTheme();
+}
+
 /*!
     Installs the style sheet corresponding to the id for the widget. The widget's high DPI
-    feature and theme will be automatically updated.
+    display and theme will be automatically updated.
 */
 void QMDecoratorV2::installTheme(QWidget *w, const QString &id) {
     Q_D(QMDecoratorV2);
@@ -765,7 +890,7 @@ void QMDecoratorV2::installTheme(QWidget *w, const QString &id) {
     auto it = d->themeSubscribers.find(w);
     if (it == d->themeSubscribers.end()) {
         connect(w, &QWidget::destroyed, d, &QMDecoratorV2Private::_q_themeSubscriberDestroyed);
-        it = d->themeSubscribers.insert(w, new ThemeGuardV2(w, d));
+        it = d->themeSubscribers.insert(w, new QMDecoratorThemeGuardV2(w, d));
     }
     auto &tg = *it.value();
     tg.ids += id;

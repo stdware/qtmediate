@@ -21,7 +21,8 @@ public:
     explicit QMDecoratorV2(QObject *parent = nullptr);
     ~QMDecoratorV2();
 
-    static QString evaluateStyleSheet(const QString &stylesheet, double ratio = 1);
+    static QString evaluateStyleSheet(const QString &stylesheet, double ratio = 1,
+                                      double fontRatio = 1);
 
 public:
     void addThemePath(const QString &path);
@@ -33,9 +34,17 @@ public:
     QStringList themes() const;
     QString theme() const;
     void setTheme(const QString &theme);
+
     void refreshTheme();
+    void deferRefreshTheme();
 
     QString themeVariable(const QString &key) const;
+
+    double fontRatio() const;
+    void setFontRatio(double ratio);
+
+    double zoomRatio() const;
+    void setZoomRatio(double ratio);
 
 Q_SIGNALS:
     void themeChanged(const QString &theme);

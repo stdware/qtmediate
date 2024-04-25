@@ -50,13 +50,6 @@ QMAppExtensionPrivate::QMAppExtensionPrivate() {
 QMAppExtensionPrivate::~QMAppExtensionPrivate() {
 }
 
-static QFont getSystemDefaultWithDpi() {
-    QFont font = QMAppExtension::systemDefaultFont();
-    double ratio = QGuiApplication::primaryScreen()->logicalDotsPerInch() / QM::unitDpi();
-    font.setPixelSize(12 * ratio);
-    return font;
-}
-
 void QMAppExtensionPrivate::init() {
     // This is necessary for macOS platforms, so that QIcon will return a
     // pixmap with correct devicePixelRatio when using QIcon::pixmap().
@@ -75,7 +68,8 @@ void QMAppExtensionPrivate::init() {
         }
     }
 
-    QFont font = getSystemDefaultWithDpi();
+    QFont font = QMAppExtension::systemDefaultFont();
+    font.setPixelSize(12);
 
     // Init font
     if (!appFont.isEmpty()) {
@@ -194,6 +188,14 @@ QFont QMAppExtension::systemDefaultFont() {
     font.setPixelSize(font.pointSize() / 72.0 * QM::unitDpi());
     return font;
 #endif
+}
+
+QFont QMAppExtension::systemDefaultFontWithDpi(double dpi) {
+    QFont font = QMAppExtension::systemDefaultFont();
+    double ratio =
+        (dpi > 0 ? dpi : QGuiApplication::primaryScreen()->logicalDotsPerInch()) / QM::unitDpi();
+    font.setPixelSize(int(12 * ratio));
+    return font;
 }
 
 /*!

@@ -20,7 +20,7 @@
 #include <QMCore/private/qmcoredecoratorv2_p.h>
 #include <QMWidgets/qmdecoratorv2.h>
 
-class ThemeGuardV2;
+class QMDecoratorThemeGuardV2;
 
 class QMDecoratorV2Private : public QMCoreDecoratorV2Private {
     Q_DECLARE_PUBLIC(QMDecoratorV2)
@@ -33,8 +33,10 @@ public:
     void scanForThemes() const;
 
     QSet<QString> themePaths;
-    QHash<QWidget *, ThemeGuardV2 *> themeSubscribers;
+    QHash<QWidget *, QMDecoratorThemeGuardV2 *> themeSubscribers;
     QString currentTheme;
+    double fontRatio;
+    double zoomRatio;
 
     mutable bool themeFilesDirty;
     mutable QMap<QString, QMap<QString, QString>>
@@ -44,10 +46,13 @@ public:
 
     // static int globalImageCacheSerialNum;
 
+    static QString replaceFontSizes(const QString &stylesheet, double ratio, bool rounding);
     static QString replaceSizes(const QString &stylesheet, double ratio, bool rounding);
     static QString replaceCustomKeyWithQProperty(const QString &stylesheet);
     static QString replaceCssGrammars(const QString &stylesheet);
-    static QString removeAllComments(QString data);
+    static QString removeAllComments(const QString &stylesheet);
+
+    bool hasPendingRefreshTask;
 
 private:
     void _q_themeSubscriberDestroyed();
