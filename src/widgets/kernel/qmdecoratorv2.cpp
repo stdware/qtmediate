@@ -190,13 +190,15 @@ QMDecoratorV2Private::QMDecoratorV2Private() {
     fontRatio = 1.0;
     zoomRatio = 1.0;
     hasPendingRefreshTask = false;
+    themeFilesDirty = false;
+    themeArgsDirty = false;
+    currentTheme = QString();
 }
 
 QMDecoratorV2Private::~QMDecoratorV2Private() {
 }
 
 void QMDecoratorV2Private::init() {
-    currentTheme = QString();
 }
 
 namespace {
@@ -811,6 +813,8 @@ void QMDecoratorV2::setTheme(const QString &theme) {
 
     if (d->themeFilesDirty) {
         d->scanForThemes();
+    } else if (d->themeArgsDirty) {
+        d->themeArgsDirty = false;
     } else if (d->currentTheme == theme) {
         return;
     }
@@ -859,7 +863,10 @@ void QMDecoratorV2::setFontRatio(double ratio) {
     Q_D(QMDecoratorV2);
     if (ratio <= 0 || ratio > 3)
         return;
+    if (d->fontRatio == ratio)
+        return;
     d->fontRatio = ratio;
+    d->themeArgsDirty = true;
     deferRefreshTheme();
 }
 
@@ -872,7 +879,10 @@ void QMDecoratorV2::setZoomRatio(double ratio) {
     Q_D(QMDecoratorV2);
     if (ratio <= 0 || ratio > 3)
         return;
+    if (d->zoomRatio == ratio)
+        return;
     d->zoomRatio = ratio;
+    d->themeArgsDirty = true;
     deferRefreshTheme();
 }
 

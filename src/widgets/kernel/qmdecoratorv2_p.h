@@ -39,6 +39,7 @@ public:
     double zoomRatio;
 
     mutable bool themeFilesDirty;
+    mutable bool themeArgsDirty;
     mutable QMap<QString, QMap<QString, QString>>
         stylesheetCaches;                                      // themeKey - [ namespace - content ]
     mutable QHash<QString, QStringList> nsMappings;            // widgetKey - namespaces
