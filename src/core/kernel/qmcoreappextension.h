@@ -62,6 +62,9 @@ public:
     static QString configurationPath(QSettings::Scope scope = QSettings::UserScope);
     static QString configurationBasePrefix();
 
+    static QString translate(const char *context, const char *sourceText,
+                             const char *disambiguation = nullptr, int n = -1, bool *ok = nullptr);
+
 protected:
     QMCoreAppExtension(QMCoreAppExtensionPrivate &d, QObject *parent = nullptr);
 
