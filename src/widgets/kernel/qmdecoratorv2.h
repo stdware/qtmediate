@@ -10,7 +10,7 @@
 #ifdef qIDec
 #  undef qIDec
 #endif
-#define qIDec qobject_cast<QMDecoratorV2 *>(QMCoreDecoratorV2::instance())
+#define qIDec static_cast<QMDecoratorV2 *>(QMCoreDecoratorV2::instance())
 
 class QMDecoratorV2Private;
 
