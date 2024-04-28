@@ -65,8 +65,11 @@ void CPushButton::paintEvent(QPaintEvent *event) {
     Complement \c option after the initializagtion of CPushButton::initStyleOption.
 */
 void CPushButton::initStyleOptionEx(QStyleOptionButton *opt) {
+    initStyleOption(opt);
+
     auto &option = *opt;
-    initStyleOption(&option);
+    if (option.icon.isNull() || option.iconSize.isEmpty())
+        return;
 
     // Try to correct icon color
     QMSvgx::Icon svgx(&option.icon);

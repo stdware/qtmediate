@@ -89,9 +89,13 @@ void CTabButton::initStyleOptionEx(QStyleOptionButton *opt) {
 
     Q_D(CTabButton);
     auto &option = *opt;
+    if (option.icon.isNull() || option.iconSize.isEmpty())
+        return;
 
     QSize size = iconSize();
     QPixmap originalPixmap = option.icon.pixmap(size); // Get the pixmap to apply with right size
+    if (originalPixmap.isNull())
+        return;
 
     size.rwidth() *= 1 + d->spaceRatio;                // Multiply width
 
