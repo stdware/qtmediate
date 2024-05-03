@@ -46,7 +46,10 @@ static QMap<QString, QStringList> scanTranslation_helper(const QString &path) {
             continue;
         }
 
-        res[match.captured(2) + match.captured(3)].append(file.absoluteFilePath());
+        QLocale testLocale(match.captured(2) + match.captured(3));
+        if (testLocale.language() == QLocale::C)
+            continue;
+        res[testLocale.name()].append(file.absoluteFilePath());
     }
     return res;
 }
@@ -91,7 +94,7 @@ void QMCoreDecoratorV2Private::_q_localeSubscriberDestroyed() {
 
 /*!
     \class QMCoreDecoratorV2
-    
+
     The QMCoreDecoratorV2 class provides a translation registry and a language notification system.
     It is usually created when QMCoreAppExtension initializes, so you should not manually create it.
 */
