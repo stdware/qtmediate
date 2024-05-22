@@ -14,6 +14,13 @@
 namespace QMarginsImpl {
 
     /*!
+        \internal
+    */
+    static QByteArray metaFunctionName() {
+        return QByteArrayLiteral("qmargins");
+    }
+
+    /*!
         Converts a string list to QMargins, the string list should be the form as
         <tt>["qmargins", "..."]</tt>.
 
@@ -47,23 +54,13 @@ namespace QMarginsImpl {
         return {value, value, value, value};
     }
 
-    /*!
-        QMargins identifier when converting from a string representing as function call.
-
-        \sa QMCssType::parse()
-    */
-    const char *metaFunctionName() {
-        return "qmargins";
-    }
-
     namespace {
         struct initializer {
             initializer() {
                 QMetaType::registerConverter<QStringList, QMargins>(QMarginsImpl::fromStringList);
                 QMetaType::registerConverter<QString, QMargins>(QMarginsImpl::fromString);
 
-                QMCssType::registerMetaTypeName(qMetaTypeId<QMargins>(),
-                                                QMarginsImpl::metaFunctionName());
+                QMCssType::registerMetaTypeName(qMetaTypeId<QMargins>(), metaFunctionName());
             }
             ~initializer() {
                 QMCssType::unregisterConverterFunction<QStringList, QMargins>();

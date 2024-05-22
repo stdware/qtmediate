@@ -16,6 +16,7 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *event) override;
+    void leaveEvent(QEvent *event) override;
 
     virtual void initStyleOptionEx(QStyleOptionToolButton *opt);
 };

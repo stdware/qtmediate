@@ -234,6 +234,13 @@ static int StringToWeight(const QString &str, int defaultValue) {
 }
 
 /*!
+    \internal
+*/
+static QByteArray metaFunctionName() {
+    return QByteArrayLiteral("qfont");
+}
+
+/*!
     Converts a string list to QFontInfoEx, the string list should be the form as
     <tt>["qfont", "..."]</tt>.
 
@@ -324,15 +331,6 @@ QFontInfoEx QFontInfoEx::fromStringList(const QStringList &stringList) {
     return res;
 }
 
-/*!
-    QFontInfoEx identifier when converting from a string representing as function call.
-
-    \sa QMCssType::parse()
-*/
-const char *QFontInfoEx::metaFunctionName() {
-    return "qfont";
-}
-
 QDebug operator<<(QDebug debug, const QFontInfoEx &info) {
     QDebugStateSaver saver(debug);
 
@@ -357,8 +355,7 @@ namespace {
     struct initializer {
         initializer() {
             QMetaType::registerConverter<QStringList, QFontInfoEx>(QFontInfoEx::fromStringList);
-            QMCssType::registerMetaTypeName(qMetaTypeId<QFontInfoEx>(),
-                                            QFontInfoEx::metaFunctionName());
+            QMCssType::registerMetaTypeName(qMetaTypeId<QFontInfoEx>(), metaFunctionName());
         }
         ~initializer() {
             QMCssType::unregisterConverterFunction<QStringList, QFontInfoEx>();

@@ -23,8 +23,6 @@ public:
 public:
     static QCssValueList fromStringList(const QStringList &stringList);
 
-    static const char *metaFunctionName();
-
     QM_WIDGETS_EXPORT friend QDebug operator<<(QDebug debug, const QCssValueList &list);
 
 private:

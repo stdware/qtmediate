@@ -25,8 +25,6 @@ public:
 public:
     static QCssValueMap fromStringList(const QStringList &stringList);
 
-    static const char *metaFunctionName();
-
     QM_WIDGETS_EXPORT friend QDebug operator<<(QDebug debug, const QCssValueMap &map);
 
 private:

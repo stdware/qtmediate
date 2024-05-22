@@ -12,8 +12,6 @@ namespace QMarginsImpl {
 
     QM_WIDGETS_EXPORT QMargins fromString(const QString &s);
 
-    QM_WIDGETS_EXPORT const char *metaFunctionName();
-
 }
 
 Q_DECLARE_METATYPE(QMargins)

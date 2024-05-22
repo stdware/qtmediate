@@ -36,6 +36,13 @@
 */
 
 /*!
+    \internal
+*/
+static QByteArray metaFunctionName() {
+    return QByteArrayLiteral("qmap");
+}
+
+/*!
     Converts a string list to QCssValueMap, the string list should be the form as
     <tt>["qmap", "..."]</tt>.
 
@@ -62,15 +69,6 @@ QCssValueMap QCssValueMap::fromStringList(const QStringList &stringList) {
     return res;
 }
 
-/*!
-    QCssValueMap identifier when converting from a string representing as function call.
-
-    \sa QMCssType::parse()
-*/
-const char *QCssValueMap::metaFunctionName() {
-    return "qmap";
-}
-
 QDebug operator<<(QDebug debug, const QCssValueMap &map) {
     debug << map.get();
     return debug;
@@ -80,8 +78,7 @@ namespace {
     struct initializer {
         initializer() {
             QMetaType::registerConverter<QStringList, QCssValueMap>(QCssValueMap::fromStringList);
-            QMCssType::registerMetaTypeName(qMetaTypeId<QCssValueMap>(),
-                                            QCssValueMap::metaFunctionName());
+            QMCssType::registerMetaTypeName(qMetaTypeId<QCssValueMap>(), metaFunctionName());
         }
         ~initializer() {
             QMCssType::unregisterConverterFunction<QStringList, QCssValueMap>();

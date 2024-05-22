@@ -51,6 +51,15 @@
     Returns the const reference of the wrapped container.
 */
 
+
+/*!
+    \internal
+*/
+static QByteArray metaFunctionName() {
+    return QByteArrayLiteral("qlist");
+}
+
+
 /*!
     Converts a string list to QCssValueList, the string list should be the form as
     <tt>["qlist", "..."]</tt>.
@@ -73,15 +82,6 @@ QCssValueList QCssValueList::fromStringList(const QStringList &stringList) {
     return res;
 }
 
-/*!
-    QCssValueList identifier when converting from a string representing as function call.
-
-    \sa QMCssType::parse()
-*/
-const char *QCssValueList::metaFunctionName() {
-    return "qlist";
-}
-
 QDebug operator<<(QDebug debug, const QCssValueList &list) {
     debug << list.get();
     return debug;
@@ -91,8 +91,7 @@ namespace {
     struct initializer {
         initializer() {
             QMetaType::registerConverter<QStringList, QCssValueList>(QCssValueList::fromStringList);
-            QMCssType::registerMetaTypeName(qMetaTypeId<QCssValueList>(),
-                                            QCssValueList::metaFunctionName());
+            QMCssType::registerMetaTypeName(qMetaTypeId<QCssValueList>(), metaFunctionName());
         }
         ~initializer() {
             QMCssType::unregisterConverterFunction<QStringList, QCssValueList>();

@@ -15,7 +15,8 @@ namespace QMCss {
 
     QM_WIDGETS_EXPORT QList<double> parseSizeFValueList(const QString &s);
 
-    QM_WIDGETS_EXPORT QStringList parseStringValueList(const QString &s);
+    QM_WIDGETS_EXPORT QStringList parseStringValueList(const QString &s,
+                                                       QChar separator = QChar(','));
 
     QM_WIDGETS_EXPORT bool parseBoolean(const QString &s, bool *ok = nullptr);
 
@@ -52,12 +53,12 @@ public:
 
     template <class From, class To>
     static inline void unregisterConverterFunction() {
-// #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-//         QMetaType::unregisterConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>());
-// #else
-//         QMetaType::unregisterConverterFunction(QMetaType::fromType<From>(),
-//                                                QMetaType::fromType<To>());
-// #endif
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+        QMetaType::unregisterConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>());
+#else
+        // QMetaType::unregisterConverterFunction(QMetaType::fromType<From>(),
+        //                                        QMetaType::fromType<To>());
+#endif
     }
 };
 

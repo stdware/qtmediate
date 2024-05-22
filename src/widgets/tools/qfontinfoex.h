@@ -46,8 +46,6 @@ public:
 public:
     static QFontInfoEx fromStringList(const QStringList &stringList);
 
-    static const char *metaFunctionName();
-
     QM_WIDGETS_EXPORT friend QDebug operator<<(QDebug debug, const QFontInfoEx &info);
 
 private:

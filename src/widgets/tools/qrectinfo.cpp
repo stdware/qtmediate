@@ -166,6 +166,13 @@ void QRectInfo::setRadius(int r) {
 }
 
 /*!
+    \internal
+*/
+static QByteArray metaFunctionName() {
+    return QByteArrayLiteral("qrect");
+}
+
+/*!
     Converts a string list to QRectInfo, the string list should be the form as
     <tt>["qrect", "..."]</tt>.
 
@@ -225,15 +232,6 @@ QRectInfo QRectInfo::fromStringList(const QStringList &stringList) {
     return res;
 }
 
-/*!
-    QRectInfo identifier when converting from a string representing as function call.
-
-    \sa QMCssType::parse()
-*/
-const char *QRectInfo::metaFunctionName() {
-    return "qrect";
-}
-
 QDebug operator<<(QDebug debug, const QRectInfo &info) {
     QDebugStateSaver saver(debug);
 
@@ -246,8 +244,7 @@ namespace {
     struct initializer {
         initializer() {
             QMetaType::registerConverter<QStringList, QRectInfo>(QRectInfo::fromStringList);
-            QMCssType::registerMetaTypeName(qMetaTypeId<QRectInfo>(),
-                                            QRectInfo::metaFunctionName());
+            QMCssType::registerMetaTypeName(qMetaTypeId<QRectInfo>(), metaFunctionName());
         }
         ~initializer() {
             QMCssType::unregisterConverterFunction<QStringList, QRectInfo>();

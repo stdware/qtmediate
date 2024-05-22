@@ -33,8 +33,6 @@ public:
 public:
     static QPenInfo fromStringList(const QStringList &stringList);
 
-    static const char *metaFunctionName();
-
     QM_WIDGETS_EXPORT friend QDebug operator<<(QDebug debug, const QPenInfo &info);
 
 private:

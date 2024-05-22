@@ -134,8 +134,6 @@ void QMDecoratorThemeGuardV2::updateScreen() {
     if (stylesheets.isEmpty())
         return;
 
-    // qDebug().noquote() << stylesheets;
-
     w->setStyleSheet(stylesheets);
 }
 

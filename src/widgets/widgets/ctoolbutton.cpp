@@ -51,6 +51,11 @@ void CToolButton::paintEvent(QPaintEvent *event) {
     p.drawComplexControl(QStyle::CC_ToolButton, option);
 }
 
+void CToolButton::leaveEvent(QEvent *event) {
+    update();
+    QAbstractButton::leaveEvent(event);
+}
+
 /*!
     Complement \c option after the initializagtion of QToolButton::initStyleOption.
 */

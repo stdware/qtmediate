@@ -173,6 +173,13 @@ void QPenInfo::setBrushes(const QList<QBrush> &brushes) {
 }
 
 /*!
+    \internal
+*/
+static QByteArray metaFunctionName() {
+    return QByteArrayLiteral("qpen");
+}
+
+/*!
     Converts a string list to QPenInfo, the string list should be the form as
     <tt>["qpen", "..."]</tt>.
 
@@ -264,15 +271,6 @@ QPenInfo QPenInfo::fromStringList(const QStringList &stringList) {
     return res;
 }
 
-/*!
-    QPenInfo identifier when converting from a string representing as function call.
-
-    \sa QMCssType::parse()
-*/
-const char *QPenInfo::metaFunctionName() {
-    return "qpen";
-}
-
 QDebug operator<<(QDebug debug, const QPenInfo &info) {
     debug << info.toPen();
     return debug;
@@ -282,7 +280,7 @@ namespace {
     struct initializer {
         initializer() {
             QMetaType::registerConverter<QStringList, QPenInfo>(QPenInfo::fromStringList);
-            QMCssType::registerMetaTypeName(qMetaTypeId<QPenInfo>(), QPenInfo::metaFunctionName());
+            QMCssType::registerMetaTypeName(qMetaTypeId<QPenInfo>(), metaFunctionName());
         }
         ~initializer() {
             QMCssType::unregisterConverterFunction<QStringList, QPenInfo>();

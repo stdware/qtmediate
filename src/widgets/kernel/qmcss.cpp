@@ -40,7 +40,6 @@ namespace QMCss {
      */
     QList<int> parseSizeValueList(const QString &s) {
         const auto &valueList = parseStringValueList(s);
-        qDebug().noquote() << s << valueList;
         QList<int> res;
         for (const auto &i : valueList) {
             QString s = i.simplified();
@@ -58,7 +57,6 @@ namespace QMCss {
                 res.push_back(0);
             }
         }
-        qDebug() << "res" << res;
         return res;
     }
 
@@ -90,9 +88,9 @@ namespace QMCss {
     /*!
         Parses a list of expressions separated by comma.
 
-        Supports sublists, comments, and quotes in expressions.
+        Supports sub-lists, comments, and quotes in expressions.
      */
-    QStringList parseStringValueList(const QString &s) {
+    QStringList parseStringValueList(const QString &s, QChar separator) {
         QStringList res;
         int level = 0;
         QString word;
@@ -135,7 +133,7 @@ namespace QMCss {
             }
 
             if (!isCommented) {
-                if (level == 0 && ch == ',') {
+                if (level == 0 && ch == separator) {
                     res.append(word.trimmed());
                     word.clear();
                 } else {
@@ -223,14 +221,14 @@ namespace QMCss {
 
     /*!
         Returns the index of equal sign if the string is an assign expression matching
-        <tt>key=value</tt>
+        <tt>key=value</tt> or <tt>key:value</tt>
 
         The key must consist of letters, numbers, <tt>_</tt> or <tt>-</tt>
      */
     int indexOfEqSign(const QString &s) {
         for (int i = 0; i < s.size(); ++i) {
             const auto &ch = s.at(i);
-            if (ch == '=')
+            if (ch == '=' || ch == ':')
                 return i;
             if (!ch.isLetterOrNumber() && ch != '_' && ch != '-')
                 return -1;
@@ -280,8 +278,7 @@ namespace QMCss {
 
             // Keyword argument
             isKeywordArg = true;
-            res.insert(item.left(eq).trimmed(),
-                       QM::strRemoveSideQuote(item.mid(eq + 1).trimmed()));
+            res.insert(item.left(eq).trimmed(), QM::strRemoveSideQuote(item.mid(eq + 1).trimmed()));
         }
 
         if (!fallbacks.isEmpty()) {
@@ -449,13 +446,6 @@ int QMCssType::metaTypeId(const QByteArray &name) {
     return it.value();
 }
 
-static const char *colorFuncNames[] = {
-    "rgb",
-    "rgba",
-    "hsv",
-    "hsvl",
-};
-
 /*!
     Parses variant from string, support QtMediate style variants.
 
@@ -487,10 +477,21 @@ QVariant QMCssType::parse(const QString &s) {
 
         // format: rgba(xxx)
         // Assume QColor
+        static const QString colorFuncNames[] = {
+            QStringLiteral("rgb"),
+            QStringLiteral("rgba"),
+            QStringLiteral("hsv"),
+            QStringLiteral("hsvl"),
+        };
         for (const auto &item : qAsConst(colorFuncNames)) {
             if (func == item) {
                 return QMCss::parseColor(s);
             }
+        }
+
+        // format: str(xxx)
+        if (func == "str") {
+            return valueList.at(1);
         }
 
         // format: svg(xxx)
