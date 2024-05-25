@@ -30,20 +30,21 @@ void CPushButtonPrivate::init() {
 /*!
     Constructor.
 */
-CPushButton::CPushButton(QWidget *parent) : QPushButton(parent) {
+CPushButton::CPushButton(QWidget *parent) : QPushButton(parent), d_ptr(new CPushButtonPrivate()) {
 }
 
 /*!
     Constructs with the specified text.
 */
-CPushButton::CPushButton(const QString &text, QWidget *parent) : QPushButton(text, parent) {
+CPushButton::CPushButton(const QString &text, QWidget *parent)
+    : QPushButton(text, parent), d_ptr(new CPushButtonPrivate()) {
 }
 
 /*!
     Constructs with the specified icon and text.
 */
 CPushButton::CPushButton(const QIcon &icon, const QString &text, QWidget *parent)
-    : QPushButton(icon, text, parent) {
+    : QPushButton(icon, text, parent), d_ptr(new CPushButtonPrivate()) {
 }
 
 /*!
