@@ -2,6 +2,7 @@
 #define QMWIDGETSMACROS_H
 
 #include <QMWidgets/qpixelsize.h>
+#include <QMWidgets/qmcss.h>
 
 //=====================================================================================================
 // Q_PROPERTY

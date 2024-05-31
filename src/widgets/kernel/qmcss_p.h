@@ -1,5 +1,5 @@
-#ifndef QMCSS_H
-#define QMCSS_H
+#ifndef QMCSS_P_H
+#define QMCSS_P_H
 
 #include <QColor>
 #include <QHash>
@@ -7,7 +7,7 @@
 #include <QStringList>
 #include <QVariant>
 
-#include <QMWidgets/qmwidgetsglobal.h>
+#include <QMWidgets/qmcss.h>
 
 namespace QMCss {
 
@@ -40,26 +40,4 @@ namespace QMCss {
 
 }
 
-class QM_WIDGETS_EXPORT QMCssType {
-public:
-    static bool registerMetaTypeName(int id, const QByteArray &name);
-    static bool unregisterMetaTypeName(int id);
-    static bool unregisterMetaTypeName(const QByteArray &name);
-
-    static QByteArray metaTypeName(int id);
-    static int metaTypeId(const QByteArray &name);
-
-    static QVariant parse(const QString &s);
-
-    template <class From, class To>
-    static inline void unregisterConverterFunction() {
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
-        QMetaType::unregisterConverterFunction(qMetaTypeId<From>(), qMetaTypeId<To>());
-#else
-        // QMetaType::unregisterConverterFunction(QMetaType::fromType<From>(),
-        //                                        QMetaType::fromType<To>());
-#endif
-    }
-};
-
-#endif // QMCSS_H
+#endif // QMCSS_P_H
