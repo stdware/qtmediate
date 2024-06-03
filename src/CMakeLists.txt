@@ -39,6 +39,7 @@ macro(qtmediate_add_library _target)
 
     if(WIN32 AND NOT FUNC_NO_WIN_RC AND(${_type} STREQUAL "SHARED"))
         qm_add_win_rc(${_target}
+            NAME ${QTMEDIATE_INSTALL_NAME}
             DESCRIPTION ${QTMEDIATE_PROJECT_DESCRIPTION}
             COPYRIGHT ${QTMEDIATE_PROJECT_COPYRIGHT}
         )
