@@ -63,6 +63,50 @@ void CTreeWidget::mouseReleaseEvent(QMouseEvent *event) {
     }
 }
 
+void CTreeWidget::dropEvent(QDropEvent *event) {
+    auto d = reinterpret_cast<QTreeWidgetPrivate *>(d_ptr.get());
+    QTreeWidgetItem *targetItem = nullptr;
+    int targetIndex = -1;
+    if (event->source() == this && (event->dropAction() == Qt::MoveAction ||
+                                    dragDropMode() == QAbstractItemView::InternalMove)) {
+        QModelIndex topIndex;
+        int col = -1;
+        int row = -1;
+        if (d->dropOn(event, &row, &col, &topIndex)) {
+            // When removing items the drop location could shift
+            QPersistentModelIndex dropRow = model()->index(row, col, topIndex);
+
+            // Either at a specific point or appended
+            if (row == -1) {
+                if (topIndex.isValid()) {
+                    QTreeWidgetItem *parent = itemFromIndex(topIndex);
+                    targetItem = parent;
+                    targetIndex = parent->childCount();
+                } else {
+                    targetItem = invisibleRootItem();
+                    targetIndex = topLevelItemCount();
+                }
+            } else {
+                int r = dropRow.row() >= 0 ? dropRow.row() : row;
+                if (topIndex.isValid()) {
+                    QTreeWidgetItem *parent = itemFromIndex(topIndex);
+                    targetItem = parent;
+                    targetIndex = qMin(r, parent->childCount());
+                } else {
+                    targetItem = invisibleRootItem();
+                    targetIndex = qMin(r, topLevelItemCount());
+                }
+            }
+        }
+    }
+
+    QTreeWidget::dropEvent(event);
+
+    if (event->isAccepted()) {
+        emit itemDropped(targetItem, targetIndex);
+    }
+}
+
 /*!
     \fn void CTreeWidget::itemClickedEx(QTreeWidgetItem *item, int column, Qt::MouseButton button)
 
