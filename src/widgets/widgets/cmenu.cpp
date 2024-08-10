@@ -553,7 +553,7 @@ private:
         DwmSetWindowAttribute(reinterpret_cast<HWND>(this->q->winId()),
                               DWMWA_WINDOW_CORNER_PREFERENCE_, &dwcp, sizeof(dwcp));
         // Disconnect this connection, don't run again
-        disconnect(q, &CMenu::aboutToShow, this, &CMenuPrivate::_q_menuFirstAboutToShow);
+        //        disconnect(q, &CMenu::aboutToShow, this, &CMenuPrivate::_q_menuFirstAboutToShow);
     }
 #endif
 };
