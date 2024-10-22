@@ -110,7 +110,11 @@ static QString parseExpression(QString s, const QHash<QString, QString> &vars,
         int lastIndex = 0;
         while ((index = s.indexOf(reg, index, &match)) != -1) {
             hasMatch = true;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            result += QStringView(s).sliced(lastIndex, index - lastIndex);
+#else
             result += s.midRef(lastIndex, index - lastIndex);
+#endif
 
             const auto &name = match.captured(1);
             QString val;
@@ -125,7 +129,11 @@ static QString parseExpression(QString s, const QHash<QString, QString> &vars,
             index += match.captured(0).size();
             lastIndex = index;
         }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        result += QStringView(s).sliced(lastIndex);
+#else
         result += s.midRef(lastIndex);
+#endif
         s = result;
     } while (hasMatch);
     s.replace(QStringLiteral("$$"), QStringLiteral("$"));

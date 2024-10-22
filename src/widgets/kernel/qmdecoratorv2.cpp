@@ -557,10 +557,14 @@ QString QMDecoratorV2Private::replaceFontSizes(const QString &stylesheet, double
     QString result;
     result.reserve(stylesheet.size());
     while ((index = stylesheet.indexOf(re, index, &match)) != -1) {
-        result += stylesheet.midRef(lastIndex, index - lastIndex);
-
         QString matchString = match.captured(1);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        result += QStringView(stylesheet).sliced(lastIndex, index - lastIndex);
+        double size = QStringView(matchString).sliced(0, matchString.size() - 2).toDouble();
+#else
+        result += stylesheet.midRef(lastIndex, index - lastIndex);
         double size = matchString.midRef(0, matchString.size() - 2).toDouble();
+#endif
         size *= ratio;
         QString valueString = QStringLiteral("font-size: ") +
                               (rounding ? QString::number(int(size)) : QString::number(size)) +
@@ -569,7 +573,11 @@ QString QMDecoratorV2Private::replaceFontSizes(const QString &stylesheet, double
         index += match.captured().size();
         lastIndex = index;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    result += QStringView(stylesheet).sliced(lastIndex);
+#else
     result += stylesheet.midRef(lastIndex);
+#endif
     return result;
 }
 
@@ -582,10 +590,15 @@ QString QMDecoratorV2Private::replaceSizes(const QString &stylesheet, double rat
     QString result;
     result.reserve(stylesheet.size());
     while ((index = stylesheet.indexOf(re, index, &match)) != -1) {
-        result += stylesheet.midRef(lastIndex, index - lastIndex);
-
         QString matchString = match.captured();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        result += QStringView(stylesheet).sliced(lastIndex, index - lastIndex);
+        double size = QStringView(matchString).sliced(0, matchString.size() - 2).toDouble();
+#else
+        result += stylesheet.midRef(lastIndex, index - lastIndex);
         double size = matchString.midRef(0, matchString.size() - 2).toDouble();
+#endif
+
         size *= ratio;
         QString valueString =
             (rounding ? QString::number(int(size)) : QString::number(size)) + QStringLiteral("px");
@@ -594,7 +607,11 @@ QString QMDecoratorV2Private::replaceSizes(const QString &stylesheet, double rat
         index += matchString.size();
         lastIndex = index;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    result += QStringView(stylesheet).sliced(lastIndex);
+#else
     result += stylesheet.midRef(lastIndex);
+#endif
     return result;
 }
 
@@ -610,7 +627,11 @@ QString QMDecoratorV2Private::replaceCustomKeyWithQProperty(const QString &style
     QString result;
     result.reserve(stylesheet.size());
     while ((index = stylesheet.indexOf(re, index, &match)) != -1) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        result += QStringView(stylesheet).sliced(lastIndex, index - lastIndex);
+#else
         result += stylesheet.midRef(lastIndex, index - lastIndex);
+#endif
 
         QString matchString = match.captured();
         int capturedIndex = match.capturedStart(2) - index;
@@ -623,7 +644,11 @@ QString QMDecoratorV2Private::replaceCustomKeyWithQProperty(const QString &style
         index += matchString.size();
         lastIndex = index;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    result += QStringView(stylesheet).sliced(lastIndex);
+#else
     result += stylesheet.midRef(lastIndex);
+#endif
     return result;
 }
 
@@ -640,7 +665,11 @@ QString QMDecoratorV2Private::replaceCssGrammars(const QString &stylesheet) {
         int index = 0;
         int lastIndex = 0;
         while ((index = stylesheet.indexOf(re, index, &match)) != -1) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            result += QStringView(stylesheet).sliced(lastIndex, index - lastIndex);
+#else
             result += stylesheet.midRef(lastIndex, index - lastIndex);
+#endif
 
             QString matchString = match.captured();
             QString valueString = QStringLiteral(":!") + match.captured(1).trimmed();
@@ -648,7 +677,11 @@ QString QMDecoratorV2Private::replaceCssGrammars(const QString &stylesheet) {
             index += matchString.size();
             lastIndex = index;
         }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        result += QStringView(stylesheet).sliced(lastIndex);
+#else
         result += stylesheet.midRef(lastIndex);
+#endif
     }
 
     // Replace "svg(...);" to "url(\"[[...]].svgx\");"
@@ -671,12 +704,20 @@ QString QMDecoratorV2Private::removeAllComments(const QString &stylesheet) {
     QString result;
     result.reserve(stylesheet.size());
     while ((index = stylesheet.indexOf(re, index, &match)) != -1) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        result += QStringView(stylesheet).sliced(lastIndex, index - lastIndex);
+#else
         result += stylesheet.midRef(lastIndex, index - lastIndex);
+#endif
 
         index += match.captured(0).size();
         lastIndex = index;
     }
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    result += QStringView(stylesheet).sliced(lastIndex);
+#else
     result += stylesheet.midRef(lastIndex);
+#endif
     return result;
 }
 
