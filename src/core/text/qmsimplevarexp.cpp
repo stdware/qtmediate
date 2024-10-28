@@ -5,6 +5,7 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QStandardPaths>
+#include <QStringView>
 
 /*!
     \class QMSimpleVarExp
@@ -110,7 +111,7 @@ static QString parseExpression(QString s, const QHash<QString, QString> &vars,
         int lastIndex = 0;
         while ((index = s.indexOf(reg, index, &match)) != -1) {
             hasMatch = true;
-            result += s.midRef(lastIndex, index - lastIndex);
+            result += QStringView(s).mid(lastIndex, index - lastIndex);
 
             const auto &name = match.captured(1);
             QString val;
@@ -125,7 +126,7 @@ static QString parseExpression(QString s, const QHash<QString, QString> &vars,
             index += match.captured(0).size();
             lastIndex = index;
         }
-        result += s.midRef(lastIndex);
+        result += QStringView(s).mid(lastIndex);
         s = result;
     } while (hasMatch);
     s.replace(QStringLiteral("$$"), QStringLiteral("$"));

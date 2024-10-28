@@ -51,11 +51,11 @@ CNavFrame::CNavFrame(QWidget *parent) : QFrame(parent), d_ptr(new CNavFramePriva
 
     // Left
     d->buttonLayout = new QVBoxLayout();
-    d->buttonLayout->setMargin(0);
+    d->buttonLayout->setContentsMargins(0, 0, 0, 0);
     d->buttonLayout->setSpacing(0);
 
     d->leftLayout = new QVBoxLayout();
-    d->leftLayout->setMargin(0);
+    d->leftLayout->setContentsMargins(0, 0, 0, 0);
     d->leftLayout->setSpacing(0);
 
     d->leftLayout->addLayout(d->buttonLayout);
@@ -67,7 +67,7 @@ CNavFrame::CNavFrame(QWidget *parent) : QFrame(parent), d_ptr(new CNavFramePriva
 
     // Right
     d->stack = new QStackedLayout();
-    d->stack->setMargin(0);
+    d->stack->setContentsMargins(0, 0, 0, 0);
 
     d->rightFrame = new QFrame();
     d->rightFrame->setObjectName("right-frame");
@@ -84,7 +84,7 @@ CNavFrame::CNavFrame(QWidget *parent) : QFrame(parent), d_ptr(new CNavFramePriva
     d->splitter->setStretchFactor(1, 1);
 
     d->layout = new QHBoxLayout();
-    d->layout->setMargin(0);
+    d->layout->setContentsMargins(0, 0, 0, 0);
     d->layout->setSpacing(0);
 
     d->layout->addWidget(d->splitter);
